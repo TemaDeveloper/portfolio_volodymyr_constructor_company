@@ -2,37 +2,75 @@
 .contact {
     background-color: var(--level-1);
     padding: 50px 0;
-    text-align: center;
 }
 
-.contact-container h2 {
+.contact-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-left: 10%;
+    padding-right: 10%;
+    box-sizing: border-box;
+}
+
+.contact-header {
+    width: 40%;
+    text-align: left;
+}
+
+.contact-header h2 {
     font-size: 55px;
     font-weight: bold;
-    margin-bottom: 30px;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-form input, form textarea {
-    width: 60%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
     margin-bottom: 10px;
 }
 
-form button {
+.contact-header p {
+    font-size: 18px;
+    font-weight: regular;
+}
+
+.contact-form {
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.input-group input, .input-group textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type="text"], input[type="email"], textarea {
+    resize: vertical;
+}
+
+button {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    background-color: var(--primary);
-    color: var(--text);
+    background-color: #007BFF;
+    color: white;
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
 }

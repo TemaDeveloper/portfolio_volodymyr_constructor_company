@@ -124,15 +124,28 @@
 
     <section id="contact" class="contact">
         <div class="container contact-container">
-            <h2>Contact us</h2>
-            <form>
-                <input type="text" name="name" placeholder="Name">
-                <input type="email" name="email" placeholder="Email">
-                <textarea name="message" placeholder="Message"></textarea>
-                <button type="submit">Let's get started</button>
+            <div class="contact-header">
+                <h2>Contact Us</h2>
+                <p>Feel free to reach out to us for any inquiries or questions.</p>
+            </div>
+            <form class="contact-form">
+                <div class="input-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <button type="submit">Send</button>
             </form>
         </div>
     </section>
+    
 
     <footer>
         <div class="container footer-container">

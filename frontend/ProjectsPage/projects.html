@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects Page</title>
+    <link rel="stylesheet" href="projects.css">
+</head>
+<body>
+    <div class="projects-container">
+        <div class="projects-header">
+            <h1>Photography</h1>
+            <p>Here is a collection of my best travel pictures that I took while travelling places all around the world.</p>
+            <div class="filter-buttons">
+                <button class="active" onclick="showProjects('italy')">Italy</button>
+                <button onclick="showProjects('australia')">Australia</button>
+                <button onclick="showProjects('india')">India</button>
+                <button onclick="showProjects('brazil')">Brazil</button>
+            </div>
+        </div>
+        <div id="projects-list" class="staggered-grid">
+            <!-- Project items will be inserted here dynamically -->
+        </div>
+    </div>
+    <script src="projects.js"></script>
+</body>
+</html>

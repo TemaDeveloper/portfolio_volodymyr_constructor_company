@@ -1,0 +1,60 @@
+/* Experience Section */
+.experience {
+    background-color: var(--base);
+    padding: 50px 0;
+    text-align: center;
+}
+
+.experience-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-left: 10%;
+    padding-right: 10%;
+    box-sizing: border-box;
+}
+
+.experience-container .overline,
+.experience-container h2 {
+    text-align: left;
+    width: 100%; /* Ensure full width to align left */
+}
+
+.experience-container .overline {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--light-grey);
+    margin-bottom: 10px;
+}
+
+.experience-container h2 {
+    font-size: 55px;
+    font-weight: bold; /* Adjusted size to match Label 1 */
+    font-weight: 400; /* Regular weight */
+    margin-bottom: 40px;
+    color: var(--text);
+}
+
+.years {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px; /* Increased gap for better spacing */
+}
+
+.year {
+    text-align: center;
+}
+
+.year img {
+    width: 150px; /* Increased size for the folders */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.year h3 {
+    font-size: 55px; /* Adjusted size for better readability */
+    font-weight: 400; /* Regular weight */
+    color: var(--dark-grey);
+}

@@ -1,0 +1,28 @@
+/* Header */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 5%;
+    padding-right: 5%;
+    box-sizing: border-box;
+}
+
+header {
+    background-color: var(--base);
+    padding: 20px 0;
+}
+
+header h1 {
+    font-size: 24px;
+}
+
+header nav ul {
+    display: flex;
+    gap: 15px;
+}
+
+header nav ul li a {
+    color: var(--text);
+    font-size: 16px;
+}

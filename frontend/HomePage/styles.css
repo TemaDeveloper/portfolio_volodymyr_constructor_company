@@ -1,0 +1,177 @@
+/* Define the color scheme */
+:root {
+    --base: #000000;
+    --level-1: #181823;
+    --light-grey: #DEECF9;
+    --dark-grey: #C7E0F4;
+    --text: #FFFFFF;
+    --primary: #5221E6;
+    --green-accent: #3CC74E;
+    --pink-accent: #E95D90;
+    --peach-accent: #FFF3E4;
+    --violet-accent: #FBE4FF;
+}
+
+/* General styles */
+body, h1, h2, h3, h4, h5, p, ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-decoration: none;
+    color: var(--text);
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--base);
+}
+.experience {
+    background-color: var(--base);
+    padding: 50px 0;
+    text-align: center;
+}
+
+.experience-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-left: 10%;
+    padding-right: 10%;
+    box-sizing: border-box;
+}
+
+.experience-container .overline,
+.experience-container h2 {
+    text-align: left;
+    width: 100%; /* Ensure full width to align left */
+}
+
+.experience-container .overline {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--light-grey);
+    margin-bottom: 10px;
+}
+
+.experience-container h2 {
+    font-size: 55px; /* Adjusted size to match Label 1 */
+    font-weight: bold; /* Regular weight */
+    margin-bottom: 40px;
+    color: var(--text);
+}
+
+.years {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px; /* Adjust gap for better spacing */
+}
+
+.year {
+    text-align: center;
+    position: relative; /* Added to position elements within each year */
+}
+
+.year h3 {
+    font-size: 55px; /* Adjusted size for better readability */
+    font-weight: 400; /* Regular weight */
+    color: var(--dark-grey);
+    margin-top: 20px; /* Added to provide space between folder and text */
+    z-index: 1; /* Ensure text is above other elements */
+    position: relative; /* Ensure h3 is positioned correctly */
+    top: 20px; /* Add some space above the h3 element */
+}
+
+
+/* this is for the back flap of the folder */
+.folder {
+    -webkit-perspective: 500px;
+    perspective: 500px;
+    width: 140px; /* Adjusted width */
+    height: 70px; /* Adjusted height */
+    background: #ffd480;
+    position: relative;
+    border-top-right-radius: 5px;
+    cursor: pointer;
+    -webkit-transition: all 300ms ease;
+    transition: all 300ms ease;
+    margin: 0 auto 60px; /* Add margin bottom to ensure space below the folder */
+    z-index: 2; /* Ensure folder is above other elements */
+}
+/* this is for the folder's tab */
+.folder::before {
+    width: 50px; /* Adjusted width */
+    height: 15px; /* Adjusted height */
+    content: '';
+    background: #ffd480;
+    position: absolute;
+    top: -15px; /* Adjusted position */
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    left: 0; /* Align with the left side */
+}
+/* this is for the folder's front flap */
+.folder::after {
+    width: 140px; /* Adjusted width */
+    height: 120px; /* Adjusted height */
+    position: absolute;
+    content: '';
+    background: #ffcb66;
+    top: 30px; /* Adjusted position */
+    left: 0; /* Align with the left side */
+    box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.3);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    /* the transform property rotates the front flap of the folder a bit to make it look 3D */
+    -webkit-transform: rotateX(-10deg);
+    transform: rotateX(-10deg);
+    -webkit-transition: all 400ms ease;
+    transition: all 400ms ease;
+}
+/* this is for the piece of paper inside the folder */
+.folder-inside {
+    width: 120px; /* Adjusted width */
+    height: 90px; /* Adjusted height */
+    position: absolute;
+    background: #fff;
+    top: 20px; /* Adjusted position */
+    left: 10px; /* Adjusted position */
+    box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.05);
+    -webkit-transform: rotate(-1deg);
+    transform: rotate(-1deg);
+    border: 1px solid #ddd;
+    -webkit-transition: all 200ms ease;
+    transition: all 200ms ease;
+}
+/* this is for the lines on the paper */
+.folder-inside::before {
+    content: '';
+    /* we're going to use linear gradients to create the lines */
+    background: -webkit-repeating-linear-gradient(145deg, #ffffff, #ffffff 10px, #333333 7px, #333333 20px);
+    background: repeating-linear-gradient(0deg, #ffffff, #ffffff 10px, #333333 10px, #333333 20px);
+    position: absolute;
+    top: -15px; /* Adjusted position */
+    left: 20px; /* Adjusted position */
+    width: 80px; /* Adjusted width */
+    height: 100px; /* Adjusted height */
+    color: #343434;
+    font-size: 40px; /* Adjusted font size */
+    line-height: 20px; /* Adjusted line height */
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    opacity: 0.15;
+}
+/* finally let's get this folder to rotate when we hover on it */
+.folder:hover {
+    -webkit-transform: translateY(-2%);
+    transform: translateY(-2%);
+}
+.folder:hover::after {
+    -webkit-transform: rotateX(-15deg);
+    transform: rotateX(-15deg);
+}
+.folder:hover .folder-inside {
+    -webkit-transform: rotate(-7deg) translateY(-15%);
+    transform: rotate(-7deg) translateY(-15%);
+}

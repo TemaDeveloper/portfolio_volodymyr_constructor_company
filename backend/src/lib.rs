@@ -1,7 +1,9 @@
 use axum::{
     routing::get,
-    Router,
+    Router
 };
+use axum::http::Method;
+use tower_http::cors::{Any, CorsLayer};
 
 pub async fn run(){
 
@@ -17,8 +19,12 @@ pub async fn run(){
 } 
 
 pub fn create_routes() -> Router<>{
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET, Method::POST])
+        .allow_origin(Any);
 
     Router::new()
-    .route("/auth", get(|| async {"Auth User!"}))
+        .route("/auth", get(|| async {"Auth User!"}))
+        .layer(cors)
 
 }

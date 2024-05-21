@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="auth-container">
-        <form class="auth-form">
+        <form id="authForm" class="auth-form">
             <h2>Login</h2>
             <div class="input-group">
                 <label for="email">Email</label>
@@ -18,8 +18,15 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Done</button>
+            <button id="submit" type="submit">Done</button>
         </form>
     </div>
+    <script>
+        document.getElementById('authForm').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            // Here you can add authentication logic if needed
+            window.location.href = '../ProjectAddition/addition.html'; // Redirect to additional.html
+        });
+    </script>
 </body>
 </html>

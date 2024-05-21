@@ -1,9 +1,9 @@
 /* Define the color scheme */
 :root {
-    --base: #000000;
-    --level-1: #181823;
-    --light-grey: #DEECF9;
-    --dark-grey: #C7E0F4;
+    --base: #b68c5a;
+    --level-1: #e5c58f;
+    --light-grey: #f5e3cc;
+    --dark-grey: #e2b54e;
     --text: #FFFFFF;
     --primary: #5221E6;
     --green-accent: #3CC74E;
@@ -11,6 +11,8 @@
     --peach-accent: #FFF3E4;
     --violet-accent: #FBE4FF;
 }
+
+
 
 /* General styles */
 body, h1, h2, h3, h4, h5, p, ul, li {
@@ -66,11 +68,17 @@ body {
     justify-content: center;
     align-items: center;
     gap: 30px; /* Adjust gap for better spacing */
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .year {
     text-align: center;
     position: relative; /* Added to position elements within each year */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .year h3 {
@@ -80,9 +88,7 @@ body {
     margin-top: 20px; /* Added to provide space between folder and text */
     z-index: 1; /* Ensure text is above other elements */
     position: relative; /* Ensure h3 is positioned correctly */
-    top: 20px; /* Add some space above the h3 element */
 }
-
 
 /* this is for the back flap of the folder */
 .folder {
@@ -99,6 +105,7 @@ body {
     margin: 0 auto 60px; /* Add margin bottom to ensure space below the folder */
     z-index: 2; /* Ensure folder is above other elements */
 }
+
 /* this is for the folder's tab */
 .folder::before {
     width: 50px; /* Adjusted width */
@@ -111,6 +118,7 @@ body {
     border-top-right-radius: 5px;
     left: 0; /* Align with the left side */
 }
+
 /* this is for the folder's front flap */
 .folder::after {
     width: 140px; /* Adjusted width */
@@ -129,6 +137,7 @@ body {
     -webkit-transition: all 400ms ease;
     transition: all 400ms ease;
 }
+
 /* this is for the piece of paper inside the folder */
 .folder-inside {
     width: 120px; /* Adjusted width */
@@ -144,6 +153,7 @@ body {
     -webkit-transition: all 200ms ease;
     transition: all 200ms ease;
 }
+
 /* this is for the lines on the paper */
 .folder-inside::before {
     content: '';
@@ -162,6 +172,7 @@ body {
     transform: rotate(-90deg);
     opacity: 0.15;
 }
+
 /* finally let's get this folder to rotate when we hover on it */
 .folder:hover {
     -webkit-transform: translateY(-2%);
@@ -174,4 +185,24 @@ body {
 .folder:hover .folder-inside {
     -webkit-transform: rotate(-7deg) translateY(-15%);
     transform: rotate(-7deg) translateY(-15%);
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .years {
+        flex-direction: column;
+    }
+
+    .experience-container .overline, .experience-container h2 {
+        text-align: center;
+    }
+
+    .year h3 {
+        font-size: 40px;
+        top: 10px;
+    }
+
+    .folder {
+        margin-bottom: 60px;
+    }
 }

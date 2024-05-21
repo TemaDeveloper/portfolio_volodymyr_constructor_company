@@ -35,8 +35,8 @@
                     <img src="images/volodymyr_photo.jpg" alt="Volodymyr">
                 </div>
                 <div class="hero-text">
-                    <h2>I'm Volodymyr. A Constructor based in Canada.</h2>
-                    <p>I'm probably the most passionate designer you will ever get to work with. If you have a great project that needs some amazing skills, then I’m your guy.</p>
+                    <h2>I'm<br>[FirstName] [LastName]</h2>
+                    <p>[email@gmail.com]</p>
                 </div>
             </div>
         </div>
@@ -47,19 +47,19 @@
             <p class="overline">Work Experience</p>
             <h2>The Work I’ve done in different years</h2>
             <div class="years">
-                <div class="year">
+                <div class="year" data-year="2021">
                     <div class="folder">
                         <div class="folder-inside"></div>
                     </div>
                     <h3>2021</h3>
                 </div>
-                <div class="year">
+                <div class="year" data-year="2022">
                     <div class="folder">
                         <div class="folder-inside"></div>
                     </div>
                     <h3>2022</h3>
                 </div>
-                <div class="year">
+                <div class="year" data-year="2023">
                     <div class="folder">
                         <div class="folder-inside"></div>
                     </div>
@@ -68,7 +68,15 @@
             </div>
         </div>
     </section>
-    
+
+    <script>
+        document.querySelectorAll('.folder').forEach(folder => {
+            folder.addEventListener('click', function() {
+                const year = this.closest('.year').dataset.year;
+                window.location.href = `../ProjectsPage/projects.html?year=${year}`;
+            });
+        });
+    </script>
 
     <section id="services" class="skillset">
         <div class="container skillset-container">

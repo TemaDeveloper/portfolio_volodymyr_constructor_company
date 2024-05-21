@@ -5,18 +5,18 @@ body, html {
     width: 100%;
     height: 100%;
     font-family: 'Arial', sans-serif;
-    background: #181823; /* Match the HomePage background color */
+    background: #b68c5a; /* Match the HomePage background color */
     color: var(--text);
 }
 
 /* Color Variables */
 :root {
-    --base: #000000;
-    --level-1: #181823;
-    --light-grey: #DEECF9;
-    --dark-grey: #C7E0F4;
+    --base: #b68c5a;
+    --level-1: #e5c58f;
+    --light-grey: #f5e3cc;
+    --dark-grey: #e2b54e;
     --text: #FFFFFF;
-    --primary: #5221E6;
+    --primary: #e2b54e;
     --green-accent: #3CC74E;
     --pink-accent: #E95D90;
     --peach-accent: #FFF3E4;
@@ -37,6 +37,19 @@ body, html {
     --button: 18px;
 }
 
+
+/* Ensure the section starts at the top */
+.projects {
+    padding-top: 20px; /* Adjust padding as necessary */
+}
+
+/* Additional styles for the projects section */
+.projects-container {
+    padding: 20px; /* Adjust padding to suit your design */
+}
+
+
+
 .projects-container {
     width: 90%;
     max-width: 1200px;
@@ -56,7 +69,7 @@ body, html {
 
 .projects-header p {
     font-size: var(--body-1);
-    color: var(--dark-grey);
+    color: var(--text);
 }
 
 .filter-buttons {

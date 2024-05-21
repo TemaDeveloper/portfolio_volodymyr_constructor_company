@@ -9,8 +9,8 @@
 <body>
     <div class="projects-container">
         <div class="projects-header">
-            <h1>Photography</h1>
-            <p>Here is a collection of my best travel pictures that I took while travelling places all around the world.</p>
+            <h1 id="projects-title">Projects for</h1>
+            <p>Here is a collection of my best projects that I did while travelling places all around the world.</p>
             <div class="filter-buttons">
                 <button class="active" onclick="showProjects('italy')">Italy</button>
                 <button onclick="showProjects('australia')">Australia</button>
@@ -22,6 +22,18 @@
             <!-- Project items will be inserted here dynamically -->
         </div>
     </div>
+    <script>
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        const year = getQueryParameter('year');
+        if (year) {
+            document.getElementById('projects-title').innerText = `Projects for ${year}`;
+            // Load and display projects for the selected year
+        }
+    </script>
     <script src="projects.js"></script>
 </body>
 </html>

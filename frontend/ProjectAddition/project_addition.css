@@ -58,6 +58,8 @@ h1 {
     width: 100%;
     margin-bottom: 20px;
     text-align: left;
+    box-sizing: border-box;
+    padding: 0 10px; /* Ensures equal padding on both sides */
 }
 
 .input-group label {
@@ -76,6 +78,7 @@ h1 {
     border-radius: 10px;
     background: var(--level-1);
     color: var(--text);
+    box-sizing: border-box;
 }
 
 .image-placeholder {
@@ -147,6 +150,40 @@ h2 {
 
 .details .title {
     font-size: var(--heading-4);
-    color: var(--text);
+    color: var (--text);
     margin-top: 10px;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+    .project-addition-container {
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    h1 {
+        font-size: calc(var(--heading-1) * 0.5);
+    }
+
+    .input-group input {
+        font-size: calc(var(--body-1) * 0.8);
+        padding: 10px;
+    }
+
+    .add-image-btn, .submit-btn {
+        font-size: calc(var(--button) * 0.8);
+        padding: 8px 16px;
+    }
+
+    h2 {
+        font-size: calc(var(--heading-2) * 0.8);
+    }
+
+    .grid-item img {
+        height: 150px;
+    }
+
+    .details .title {
+        font-size: calc(var(--heading-4) * 0.8);
+    }
 }

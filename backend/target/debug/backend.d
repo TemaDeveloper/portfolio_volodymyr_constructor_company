@@ -1,1 +1,0 @@
-/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/backend/target/debug/backend: /Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/backend/src/lib.rs /Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/backend/src/main.rs

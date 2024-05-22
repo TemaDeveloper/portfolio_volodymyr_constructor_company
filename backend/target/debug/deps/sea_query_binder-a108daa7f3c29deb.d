@@ -1,8 +1,0 @@
-/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/backend/target/debug/deps/libsea_query_binder-a108daa7f3c29deb.rmeta: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/sqlx_postgres.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/values.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/sqlx.rs
-
-/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/backend/target/debug/deps/sea_query_binder-a108daa7f3c29deb.d: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/sqlx_postgres.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/values.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/sqlx.rs
-
-/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/lib.rs:
-/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/sqlx_postgres.rs:
-/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/values.rs:
-/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sea-query-binder-0.5.0/src/sqlx.rs:

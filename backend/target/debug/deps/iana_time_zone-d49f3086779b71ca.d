@@ -1,9 +1,0 @@
-/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/backend/target/debug/deps/libiana_time_zone-d49f3086779b71ca.rmeta: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/ffi_utils.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/tz_macos.rs
-
-/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/backend/target/debug/deps/libiana_time_zone-d49f3086779b71ca.rlib: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/ffi_utils.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/tz_macos.rs
-
-/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/backend/target/debug/deps/iana_time_zone-d49f3086779b71ca.d: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/ffi_utils.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/tz_macos.rs
-
-/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/lib.rs:
-/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/ffi_utils.rs:
-/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/iana-time-zone-0.1.60/src/tz_macos.rs:

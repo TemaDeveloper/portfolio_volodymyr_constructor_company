@@ -1,0 +1,3 @@
+[codegen]
+output_dir = "src/entities"
+with_serde = true

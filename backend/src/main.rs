@@ -1,11 +1,22 @@
-use crate::pic_info::PicInfo;
-
-mod pic_info;
+use backend::create_routes;
+use dotenv::dotenv;
+use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()>{
-    let pic = include_bytes!("../20240518_214102.jpg");
-    println!("{:?}", PicInfo::from_slice(pic).await?);
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::INFO)
+        .init();
+    dotenv()?;
+
+    let router = create_routes()
+        .await?;
+
+    let listener = TcpListener::bind("0.0.0.0:8000")
+        .await?;
+
+    axum::serve(listener, router)
+        .await?;
 
     Ok(())
 }

@@ -1,0 +1,14 @@
+projects page
+- There are several folders of location by Country 
+(if the user add the image which has a specific year,
+the folder year has to contain several location tabs, pressing on
+which once the projects with the same location and year has to be oppened)
+
+getting project by year and country 
+- get_project(year, country) -> project 
+- get_projects_by_location_and_year
+
+we will have also the all projects folders (contains all of the projects even those that do not have any location or date)
+gallery: 
+- get_all_projects -> array of projects
+

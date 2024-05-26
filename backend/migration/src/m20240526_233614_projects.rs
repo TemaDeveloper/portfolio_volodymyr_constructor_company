@@ -7,41 +7,53 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
-        todo!();
+        return Ok(());
 
         manager
             .create_table(
                 Table::create()
-                    .table(Post::Table)
+                    .table(Users::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Post::Id)
-                            .integer()
+                        ColumnDef::new(Users::Name)
                             .not_null()
-                            .auto_increment()
-                            .primary_key(),
+                            .char_len(255)
                     )
-                    .col(ColumnDef::new(Post::Title).string().not_null())
-                    .col(ColumnDef::new(Post::Text).string().not_null())
+                    .col(
+                        ColumnDef::new(Users::LastName)
+                            .not_null()
+                            .char_len(255)
+                    )
+                    .col(
+                        ColumnDef::new(Users::Email)
+                            .not_null()
+                            .char_len(255)
+                    )
+                    .col(
+                        ColumnDef::new(Users::Password)
+                            .not_null()
+                            .char_len(255)
+                    )
                     .to_owned(),
             )
             .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        todo!();
+        return Ok(());
 
         manager
-            .drop_table(Table::drop().table(Post::Table).to_owned())
+            .drop_table(Table::drop().table(Users::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-enum Post {
-    Table,
-    Id,
-    Title,
-    Text,
+enum Users {
+    Table, 
+    Id, 
+    Name, 
+    LastName, 
+    Email, 
+    Password,
 }

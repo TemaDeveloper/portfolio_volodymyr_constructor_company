@@ -53,7 +53,7 @@ pub async fn login(
                             id: user.id,
                             name: user.name,
                             email: user.email,
-                            is_admin: false, // Assuming there's an `is_admin` field
+                            is_admin: true, // Assuming there's an `is_admin` field
                         };
                         info!("Authentication successful for user: {:?}", user_response);
                         return (StatusCode::OK, Json(user_response)).into_response();

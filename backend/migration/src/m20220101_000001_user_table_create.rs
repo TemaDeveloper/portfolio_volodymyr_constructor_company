@@ -6,33 +6,40 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        return Ok(());
-
         manager
             .create_table(
                 Table::create()
                     .table(User::Table)
                     .if_not_exists()
                     .col(
+                        ColumnDef::new(User::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key()
+                    )
+                    .col(
                         ColumnDef::new(User::Name)
+                            .string()
                             .not_null()
                             .char_len(255)
                     )
                     .col(
                         ColumnDef::new(User::LastName)
+                            .string()
                             .not_null()
                             .char_len(255)
                     )
                     .col(
                         ColumnDef::new(User::Email)
+                            .string()
                             .not_null()
                             .char_len(255)
                     )
                     .col(
                         ColumnDef::new(User::Password)
-                            .not_null()
                             .binary()
+                            .not_null()
                     )
                     .to_owned(),
             )
@@ -40,8 +47,6 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        return Ok(());
-
         manager
             .drop_table(Table::drop().table(User::Table).to_owned())
             .await
@@ -50,10 +55,10 @@ impl MigrationTrait for Migration {
 
 #[derive(DeriveIden)]
 enum User {
-    Table, 
-    Id, 
-    Name, 
-    LastName, 
-    Email, 
+    Table,
+    Id,
+    Name,
+    LastName,
+    Email,
     Password,
 }

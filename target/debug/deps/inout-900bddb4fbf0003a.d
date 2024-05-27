@@ -1,0 +1,9 @@
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/libinout-900bddb4fbf0003a.rmeta: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/errors.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/inout.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/inout_buf.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/reserved.rs
+
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/inout-900bddb4fbf0003a.d: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/errors.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/inout.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/inout_buf.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/reserved.rs
+
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/lib.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/errors.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/inout.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/inout_buf.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/inout-0.1.3/src/reserved.rs:

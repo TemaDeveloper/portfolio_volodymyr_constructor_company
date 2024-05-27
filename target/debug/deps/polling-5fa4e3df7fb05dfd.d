@@ -1,0 +1,10 @@
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/libpolling-5fa4e3df7fb05dfd.rmeta: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/os.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/os/kqueue.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/kqueue.rs
+
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/libpolling-5fa4e3df7fb05dfd.rlib: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/os.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/os/kqueue.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/kqueue.rs
+
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/polling-5fa4e3df7fb05dfd.d: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/os.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/os/kqueue.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/kqueue.rs
+
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/lib.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/os.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/os/kqueue.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/polling-3.7.0/src/kqueue.rs:

@@ -1,0 +1,9 @@
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/libfutures_executor-af378a52032ad680.rmeta: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/local_pool.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/enter.rs
+
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/libfutures_executor-af378a52032ad680.rlib: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/local_pool.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/enter.rs
+
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/futures_executor-af378a52032ad680.d: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/local_pool.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/enter.rs
+
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/lib.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/local_pool.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/futures-executor-0.3.30/src/enter.rs:

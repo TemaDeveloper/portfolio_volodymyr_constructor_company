@@ -9,6 +9,7 @@ edition = "2021"
 anyhow = "1.0.86"
 async-trait = "0.1.80"
 axum = "0.7.5"
+bcrypt = "0.15.1"
 cargo-watch = "8.5.2"
 chrono = "0.4.38"
 dotenv = "0.15.0"
@@ -30,3 +31,7 @@ uuid = {version = "1.8.0", features = ["v4"]}
 [dependencies.sea-orm-migration]
 version = "0.12.15"
 features = ["runtime-tokio-rustls", "sqlx-postgres"]
+
+
+
+

@@ -1,0 +1,9 @@
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/libaliasable-afbd0d2a2b57a959.rmeta: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/mut_ref.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/boxed.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/string.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/vec.rs
+
+/Users/artemijfridriksen/Desktop/freelance/portfolio_volodymyr_constructor_company/target/debug/deps/aliasable-afbd0d2a2b57a959.d: /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/lib.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/mut_ref.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/boxed.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/string.rs /Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/vec.rs
+
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/lib.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/mut_ref.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/boxed.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/string.rs:
+/Users/artemijfridriksen/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aliasable-0.1.3/src/vec.rs:

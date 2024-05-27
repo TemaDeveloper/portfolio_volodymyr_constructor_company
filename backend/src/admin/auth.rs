@@ -4,11 +4,16 @@ use axum::{
     response::IntoResponse,
 };
 use bcrypt::verify;
+use chrono::Utc;
+use jsonwebtoken::{encode, EncodingKey, Header};
 use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use tracing::{info, error};
 
 use crate::entities;
+
+const JWT_SECRET: &[u8] = b"secret";
 
 #[derive(Deserialize, Debug)]
 pub struct GetReqBody {
@@ -17,12 +22,27 @@ pub struct GetReqBody {
     pub password: String,
 }
 
-#[derive(Serialize, Debug)]
-pub struct GetResponse {
-    pub id: i32,
-    pub name: String,
-    pub email: String,
-    pub is_admin: bool,
+#[derive(Debug, Deserialize, Serialize)]
+struct Claims {
+    sub: String,
+    exp: usize,
+}
+
+use jsonwebtoken::Algorithm;
+
+pub fn create_jwt(uid: &str) -> Result<String, String> {
+    let expiration = Utc::now()
+        .checked_add_signed(chrono::Duration::seconds(3600))
+        .expect("valid timestamp")
+        .timestamp();
+
+    let claims = Claims {
+        sub: uid.to_owned(),
+        exp: expiration as usize,
+    };
+    let header = Header::new(Algorithm::HS512);
+    encode(&header, &claims, &EncodingKey::from_secret(JWT_SECRET))
+        .map_err(|_| "JWTTokenCreationError".to_string())
 }
 
 pub async fn login(
@@ -46,35 +66,38 @@ pub async fn login(
     match user_result {
         Ok(Some(user)) => {
             info!("User found: {:?}", user);
-            match verify(&user_info.password, &String::from_utf8_lossy(&user.password)) {
+            let stored_password = String::from_utf8(user.password).expect("Password decoding error");
+            match verify(&user_info.password, &stored_password) {
                 Ok(is_valid) => {
                     if is_valid {
-                        let user_response = GetResponse {
-                            id: user.id,
-                            name: user.name,
-                            email: user.email,
-                            is_admin: true, // Assuming there's an `is_admin` field
-                        };
-                        info!("Authentication successful for user: {:?}", user_response);
-                        return (StatusCode::OK, Json(user_response)).into_response();
+                        match create_jwt(&user.email) {
+                            Ok(token) => {
+                                info!("Authentication successful for user: {:?}", user.email);
+                                return (StatusCode::OK, Json(json!({ "token": token }))).into_response();
+                            }
+                            Err(err) => {
+                                error!("JWT creation error: {:?}", err);
+                                return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "JWT creation error" }))).into_response();
+                            }
+                        }
                     } else {
                         info!("Password verification failed for user: {:?}", user_info);
-                        return (StatusCode::UNAUTHORIZED, Json("Invalid credentials")).into_response();
+                        return (StatusCode::UNAUTHORIZED, Json(json!({ "error": "Invalid credentials" }))).into_response();
                     }
                 }
                 Err(e) => {
                     error!("Password verification error for user: {:?}, error: {:?}", user_info, e);
-                    return (StatusCode::INTERNAL_SERVER_ERROR, Json("Password verification error")).into_response();
+                    return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Password verification error" }))).into_response();
                 }
             }
         }
         Ok(None) => {
             info!("User not found: {:?}", user_info);
-            return (StatusCode::NOT_FOUND, Json("User not found")).into_response();
+            return (StatusCode::NOT_FOUND, Json(json!({ "error": "User not found" }))).into_response();
         }
         Err(e) => {
             error!("Database query error: {:?}", e);
-            return (StatusCode::INTERNAL_SERVER_ERROR, Json("Database query error")).into_response();
+            return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Database query error" }))).into_response();
         }
     }
 }

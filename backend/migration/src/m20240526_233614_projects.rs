@@ -6,33 +6,52 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        return Ok(());
-
         manager
             .create_table(
                 Table::create()
-                    .table(Users::Table)
+                    .table(Projects::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Users::Name)
+                        ColumnDef::new(Projects::Id)
+                            .integer()
+                            .auto_increment()
+                            .primary_key()
+                            .not_null()
+                    )
+                    .col(
+                        ColumnDef::new(Projects::Name)
                             .not_null()
                             .char_len(255)
                     )
                     .col(
-                        ColumnDef::new(Users::LastName)
+                        ColumnDef::new(Projects::Description)
                             .not_null()
-                            .char_len(255)
+                            .text()
                     )
                     .col(
-                        ColumnDef::new(Users::Email)
+                        ColumnDef::new(Projects::Pictures)
                             .not_null()
-                            .char_len(255)
+                            .array(ColumnType::Text)
                     )
                     .col(
-                        ColumnDef::new(Users::Password)
+                        ColumnDef::new(Projects::Year)
                             .not_null()
-                            .char_len(255)
+                            .integer()
+                    )
+                    .col(
+                        ColumnDef::new(Projects::Country)
+                            .char_len(512) // should be enough for any countrie's name
+                            .not_null()
+                    )
+                    .col(
+                        ColumnDef::new(Projects::Latitude)
+                            .not_null()
+                            .double()
+                    )
+                    .col(
+                        ColumnDef::new(Projects::Longitude)
+                            .not_null()
+                            .double()
                     )
                     .to_owned(),
             )
@@ -40,20 +59,25 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        return Ok(());
 
         manager
-            .drop_table(Table::drop().table(Users::Table).to_owned())
+            .drop_table(Table::drop()
+                .if_exists()
+                .table(Projects::Table).to_owned()
+            )
             .await
     }
 }
 
 #[derive(DeriveIden)]
-enum Users {
+enum Projects {
     Table, 
     Id, 
     Name, 
-    LastName, 
-    Email, 
-    Password,
+    Description,
+    Pictures,
+    Year,
+    Country,
+    Latitude,
+    Longitude
 }

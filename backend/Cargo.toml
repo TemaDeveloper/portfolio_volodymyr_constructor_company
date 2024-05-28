@@ -7,14 +7,16 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.86"
+askama = { version = "0.12.1", features = ["serde", "serde-json", "serde_json", "with-axum"] }
 async-trait = "0.1.80"
-axum = "0.7.5"
+axum = {version = "0.7.5", features = ["multipart"]}
 cargo-watch = "8.5.2"
 chrono = "0.4.38"
 dotenv = "0.15.0"
 futures = "0.3.30"
 lazy_static = "1.4.0"
-reqwest = { version = "0.12.4", features = ["json"] }
+nestify = "0.3.3"
+reqwest = { version = "0.12.4", features = ["json", "blocking"] }
 rexiv2 = "0.10.0"
 sea-orm = { version = "0.12.15", features = ["runtime-tokio-rustls", "sqlx-postgres", "macros"] }
 serde = { version = "1.0.202", features = ["derive"] }

@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use reqwest::Client;
+use reqwest::blocking::Client;
 use rexiv2::Metadata as Rexiv2Metadata;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -8,24 +8,41 @@ use thiserror::Error;
 pub enum PicInfoError {
     #[error("{0}")]
     ParseError(#[from] rexiv2::Rexiv2Error),
-    #[error("No Latitude supplied in file's metadata")]
-    NoLatitude,
-    #[error("No Longitude supplied in file's metadata")]
-    NoLongitude,
     #[error("Failed to fetch country name: {0}")]
     CountryFetchError(String),
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct GeoData {
+    pub country: String,
+    pub latitude: f64,
+    pub longitude: f64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PicInfo {
-    country: String,
-    date_time: Option<NaiveDateTime>,
-    latitude: f64,
-    longitude: f64,
+    pub date_time: Option<NaiveDateTime>,
+    pub geo_data: Option<GeoData>,
+}
+
+impl GeoData {
+    fn from_latlong(latitude: Option<f64>, longitude: Option<f64>) -> Result<Option<Self>, PicInfoError> {
+        if latitude.is_some() && longitude.is_some() {
+            let country = fetch_country_name(latitude.unwrap(), longitude.unwrap())
+                .map_err(|e| PicInfoError::CountryFetchError(e.to_string()))?;
+            Ok(Some(Self {
+                country,
+                latitude: latitude.unwrap(),
+                longitude: longitude.unwrap(),
+            }))
+        } else {
+            Ok(None)
+        }
+    }
 }
 
 impl PicInfo {
-    pub async fn from_slice(file: &[u8]) -> Result<Self, PicInfoError> {
+    pub fn from_slice(file: &[u8]) -> Result<Self, PicInfoError> {
         let metadata = Rexiv2Metadata::new_from_buffer(file)?;
 
         let date_time = metadata
@@ -33,53 +50,52 @@ impl PicInfo {
             .ok()
             .and_then(|dt| NaiveDateTime::parse_from_str(&dt, "%Y:%m:%d %H:%M:%S").ok());
 
-        let latitude_str = metadata
+        let latitude = metadata
             .get_tag_string("Exif.GPSInfo.GPSLatitude")
-            .map_err(|_| PicInfoError::NoLatitude)?;
+            .ok()
+            .map(|latitude_str| {
+                parse_gps_coordinate(
+                    &latitude_str,
+                    metadata
+                        .get_tag_string("Exif.GPSInfo.GPSLatitudeRef")
+                        .unwrap_or("N".into()),
+                )
+            });
 
-        let longitude_str = metadata
+        let longitude = metadata
             .get_tag_string("Exif.GPSInfo.GPSLongitude")
-            .map_err(|_| PicInfoError::NoLongitude)?;
+            .ok()
+            .map(|longitude_str| {
+                parse_gps_coordinate(
+                    &longitude_str,
+                    metadata
+                        .get_tag_string("Exif.GPSInfo.GPSLongitudeRef")
+                        .unwrap_or("E".into()),
+                )
+            });
 
-        let latitude = parse_gps_coordinate(
-            &latitude_str,
-            metadata
-                .get_tag_string("Exif.GPSInfo.GPSLatitudeRef")
-                .unwrap_or("N".into()),
-        );
-        let longitude = parse_gps_coordinate(
-            &longitude_str,
-            metadata
-                .get_tag_string("Exif.GPSInfo.GPSLongitudeRef")
-                .unwrap_or("E".into()),
-        );
-
-        let country = fetch_country_name(latitude, longitude)
-            .await
-            .map_err(|e| PicInfoError::CountryFetchError(e.to_string()))?;
+        let geo_data = GeoData::from_latlong(latitude, longitude)?;
 
         Ok(Self {
-            country,
             date_time,
-            latitude,
-            longitude,
+            geo_data,
         })
     }
 
-    pub fn google_map_link(&self) -> String {
-        format!(
-            "https://www.google.com/maps?q={},{}",
-            self.latitude, self.longitude
-        )
-    }
-
-    pub fn country(&self) -> &str {
-        &self.country
-    }
-
-    pub fn cords(&self) -> (f64, f64) {
-        (self.latitude, self.longitude)
-    }
+    // pub fn google_map_link(&self) -> Option<String> {
+    //     format!(
+    //         "https://www.google.com/maps?q={},{}",
+    //         self.latitude, self.longitude
+    //     )
+    // }
+    //
+    // pub fn country(&self) -> &str {
+    //     &self.country
+    // }
+    //
+    // pub fn cords(&self) -> (f64, f64) {
+    //     (self.latitude, self.longitude)
+    // }
 }
 
 fn parse_gps_coordinate(gps_str: &str, direction: String) -> f64 {
@@ -98,10 +114,10 @@ fn parse_gps_coordinate(gps_str: &str, direction: String) -> f64 {
     coordinate
 }
 
-async fn fetch_country_name(latitude: f64, longitude: f64) -> Result<String, reqwest::Error> {
+fn fetch_country_name(latitude: f64, longitude: f64) -> Result<String, reqwest::Error> {
     let client = Client::new();
     let url = format!("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={}&longitude={}&localityLanguage=en", latitude, longitude);
-    let response: serde_json::Value = client.get(&url).send().await?.json().await?;
+    let response: serde_json::Value = client.get(&url).send()?.json()?;
 
     Ok(response["countryName"]
         .as_str()

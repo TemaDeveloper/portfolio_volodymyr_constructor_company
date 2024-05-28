@@ -27,7 +27,7 @@ async fn validate_visitor_uuid(db_conn: &DatabaseConnection, uuid: &Uuid) -> boo
     count == 1
 }
 
-pub struct ValidVisitorUuid(pub(crate) Uuid);
+pub struct ValidVisitorUuid(pub Uuid);
 pub struct InvalidVisitorUuid;
 
 #[async_trait]

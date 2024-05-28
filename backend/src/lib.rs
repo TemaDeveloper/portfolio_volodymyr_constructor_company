@@ -1,3 +1,4 @@
+use axum::body::Bytes;
 use axum::extract::{multipart, Multipart, State};
 use axum::http::{Method, StatusCode};
 use axum::response::{IntoResponse, Response};
@@ -11,7 +12,7 @@ use pic_info::{GeoData, PicInfo, PicInfoError};
 use sea_orm::{ActiveModelTrait, DbErr};
 use serde::{Deserialize, Serialize};
 use state::AppState;
-use tokio::fs::File;
+use tokio::fs::{File, OpenOptions};
 use tokio::io::AsyncWriteExt;
 use tokio::task::JoinError;
 use tower_http::cors::{Any, CorsLayer};
@@ -44,7 +45,7 @@ pub enum CreateProjectError {
     #[error("One of the fields is missing: {0}")]
     MissingInformation(String),
 
-    #[error("Error parsing metadata of one of the pictures, perhaps it is not a picture?")]
+    #[error("Error parsing metadata of one of the pictures, perhaps it is not a picture?| Error: {0}")]
     PicParseError(#[from] PicInfoError),
 
     #[error("Invalid image format")]
@@ -115,7 +116,9 @@ pub async fn create_project(
         } else {
             let bytes = field.bytes().await?;
             file_workers.push(tokio::spawn(async move {
-                let pic_info = PicInfo::from_slice(&bytes)?;
+                // this clone is not doint memcpy
+                // it is like Arc::clone
+                let pic_info = PicInfo::from_bytes(bytes.clone()).await?;
                 let file_format = format!(
                     "{}_{field_name}.{}",
                     Uuid::new_v4(),
@@ -164,9 +167,12 @@ pub async fn create_project(
     let mut file_names = Vec::with_capacity(files.len());
     for (name, bytes) in files {
         file_names.push(tokio::spawn(async move {
-            let mut f = File::open(format!("assets/storage/{}", name))
-                .await
-                .unwrap();
+            let mut f = OpenOptions::new()
+                .create(true)
+                .write(true)
+                .open(format!("assets/storage/{}", name))
+                    .await
+                    .unwrap();
 
             f.write(&bytes).await.unwrap();
             name

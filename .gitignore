@@ -1,3 +1,5 @@
 backend/target
 backend/target/*
 backend/migration/target
+target
+.DS_Store

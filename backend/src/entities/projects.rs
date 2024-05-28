@@ -5,18 +5,19 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "projects")]
 pub struct Model {
-    #[sea_orm(primary_key)]
-    pub id: i32,
-    pub name: String,
-    #[sea_orm(column_type = "Text")]
-    pub description: String,
-    pub pictures: Vec<String>,
     pub year: i32,
     pub country: String,
     #[sea_orm(column_type = "Double")]
     pub latitude: f64,
     #[sea_orm(column_type = "Double")]
     pub longitude: f64,
+    pub pictures: Vec<String>,
+    #[sea_orm(column_type = "Text")]
+    pub description: String,
+    #[sea_orm(primary_key)]
+    pub id: i32,
+    #[sea_orm(column_type = "Text")]
+    pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

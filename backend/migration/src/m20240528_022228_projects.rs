@@ -11,28 +11,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Projects::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Projects::Id)
-                            .integer()
-                            .auto_increment()
-                            .primary_key()
-                            .not_null()
-                    )
-                    .col(
-                        ColumnDef::new(Projects::Name)
-                            .not_null()
-                            .char_len(255)
-                    )
-                    .col(
-                        ColumnDef::new(Projects::Description)
-                            .not_null()
-                            .text()
-                    )
-                    .col(
-                        ColumnDef::new(Projects::Pictures)
-                            .not_null()
-                            .array(ColumnType::Text)
-                    )
+                    .to_owned()
                     .col(
                         ColumnDef::new(Projects::Year)
                             .not_null()
@@ -53,21 +32,40 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .double()
                     )
-                    .to_owned(),
+                    .col(
+                        ColumnDef::new(Projects::Pictures)
+                            .not_null()
+                            .array(ColumnType::Text)
+                    )
+                    .col(
+                        ColumnDef::new(Projects::Description)
+                            .not_null()
+                            .text()
+                    )
+                    .col(
+                        ColumnDef::new(Projects::Id)
+                            .integer()
+                            .auto_increment()
+                            .primary_key()
+                            .not_null()
+                    )
+                    .col(
+                        ColumnDef::new(Projects::Name)
+                        .not_null()
+                        .text()
+                    )
+                        .to_owned()
             )
             .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-
         manager
-            .drop_table(Table::drop()
-                .if_exists()
-                .table(Projects::Table).to_owned()
-            )
+            .drop_table(Table::drop().table(Projects::Table).to_owned())
             .await
     }
 }
+
 
 #[derive(DeriveIden)]
 enum Projects {

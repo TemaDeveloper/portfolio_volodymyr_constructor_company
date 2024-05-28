@@ -7,7 +7,7 @@ use axum::{routing::get, Router};
 use chrono::Datelike;
 use entities::projects;
 use futures::future::{self, join_all};
-use pic_info::{GeoData, PicInfoError};
+use pic_info::{GeoData, PicInfo, PicInfoError};
 use sea_orm::{ActiveModelTrait, DbErr};
 use serde::{Deserialize, Serialize};
 use state::AppState;
@@ -17,8 +17,10 @@ use tokio::task::JoinError;
 use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
-use crate::pic_info::PicInfo;
 
+pub mod admin {
+    pub mod auth;
+}
 pub mod entities;
 mod pic_info;
 pub mod state;
@@ -210,7 +212,7 @@ pub async fn create_routes() -> anyhow::Result<Router> {
         .allow_origin(Any);
 
     Ok(Router::new()
-        .route("/auth", get(|| async { "Auth User!" }))
+        .route("/auth", post(admin::auth::login))
         .route("/api/create-visitor", post(visitor::create))
         .route("/api/projects", post(create_project))
         .nest("/:visitor_uuid", visitor::get_visitor_router())

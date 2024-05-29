@@ -17,7 +17,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::task::JoinError;
 use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
-
+use tokio::fs;
 
 pub mod admin {
     pub mod auth;
@@ -307,9 +307,9 @@ pub async fn update_project(
     let mut file_info = Vec::with_capacity(file_workers.len());
     let mut files = Vec::with_capacity(file_workers.len());
     for r in file_workers {
-       let (pic_info, file_name, bytes) = r??;
-       file_info.push(pic_info);
-       files.push((file_name, bytes));
+        let (pic_info, file_name, bytes) = r??;
+        file_info.push(pic_info);
+        files.push((file_name, bytes));
     }
 
     let project_info = project_info.ok_or(UpdateProjectError::NoJsonPart)?;
@@ -318,6 +318,14 @@ pub async fn update_project(
         .one(&state.db_conn)
         .await?
         .ok_or(UpdateProjectError::DbError(DbErr::RecordNotFound(format!("Project with id {} not found", project_id))))?;
+
+    // Delete previous images
+    for file_name in &existing_project.pictures {
+        let path = format!("assets/storage/{}", file_name);
+        if let Err(e) = fs::remove_file(&path).await {
+            eprintln!("Failed to delete file {}: {:?}", path, e);
+        }
+    }
 
     let country = project_info.country.clone().unwrap_or_else(|| existing_project.country.clone());
     let latitude = project_info.latitude.unwrap_or(existing_project.latitude);

@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(Projects::Country)
-                            .char_len(512) // should be enough for any countrie's name
+                            .text() // should be enough for any countrie's name
                             .not_null()
                     )
                     .col(

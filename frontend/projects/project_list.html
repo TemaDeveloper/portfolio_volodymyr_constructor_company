@@ -1,0 +1,8 @@
+{% for project in projects %}
+<img src="storage/{{project.pictures[0]}}" alt="{{ project.name }}">
+    <div class="details">
+        <p class="date">{{ project.year }}</p>
+        <p class="location">{{ project.country }}</p>
+        <h2 class="title">{{ project.name }}</h2>
+    </div>
+{% endfor %}

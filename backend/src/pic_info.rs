@@ -97,6 +97,7 @@ impl GeoData {
             let country = fetch_country_name(latitude.unwrap(), longitude.unwrap())
                 .await
                 .map_err(|e| PicInfoError::CountryFetchError(e.to_string()))?;
+            let country = country.trim().to_owned();
             Ok(Some(Self {
                 country,
                 latitude: latitude.unwrap(),

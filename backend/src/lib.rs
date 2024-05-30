@@ -25,7 +25,6 @@ pub mod admin {
 pub mod entities;
 mod pic_info;
 pub mod state;
-pub mod templates;
 mod visitor;
 
 #[derive(thiserror::Error, Debug)]
@@ -170,7 +169,7 @@ pub async fn create_project(
             let mut f = OpenOptions::new()
                 .create(true)
                 .write(true)
-                .open(format!("assets/storage/{}", name))
+                .open(format!("storage/{}", name))
                     .await
                     .unwrap();
 
@@ -221,7 +220,9 @@ pub async fn create_routes() -> anyhow::Result<Router> {
         .route("/auth", post(admin::auth::login))
         .route("/api/create-visitor", post(visitor::create))
         .route("/api/projects", post(create_project))
-        .nest("/:visitor_uuid", visitor::get_visitor_router())
+
+        .nest("/:visitor_uuid", visitor::get_visitor_router(state.clone()))
+
         .with_state(state)
         .layer(cors))
 }

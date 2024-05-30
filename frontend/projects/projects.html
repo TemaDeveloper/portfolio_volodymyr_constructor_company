@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects Page</title>
+    <link rel="stylesheet" href="projects/assets/projects.css">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+
+<body>
+    <div class="projects-container">
+        <div class="projects-header">
+            <h1 id="projects-title">Projects for {{ year }}</h1>
+            <p>Here is a collection of my best projects that I did while travelling places all around the world.</p>
+            <div class="filter-buttons">
+                {% for country in countries %}
+                <button 
+                    hx-get="projects/list?year={{ year }}&country={{ country }}" 
+                    hx-target="#projects-list"
+                    hx-swap="innerHTML"
+                >{{ country }}</button>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="projects-list" class="staggered-grid">
+            {{ initial_projects|safe }}
+        </div>
+    </div>
+</body>
+
+</html>

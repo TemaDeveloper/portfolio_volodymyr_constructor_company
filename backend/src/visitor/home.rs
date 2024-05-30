@@ -4,9 +4,8 @@ use askama_axum::Template;
 use axum::{extract::State, http::StatusCode, middleware, response::IntoResponse, routing, Router};
 use sea_orm::{DbErr, EntityTrait, QueryOrder, QuerySelect};
 use tower_http::services::ServeDir;
-use uuid::Uuid;
 
-use crate::{entities::projects, state::AppState, visitor::validate::ValidVisitorUuid};
+use crate::{entities::projects, state::AppState};
 
 use super::filter_extension;
 

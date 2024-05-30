@@ -1,19 +1,18 @@
-use askama::{MarkupDisplay, Template};
+use askama::Template;
 use askama_axum::IntoResponse;
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Query, State},
     http::StatusCode,
     middleware, routing, Router,
 };
 use sea_orm::{
-    sea_query::{Expr, Func},
-    ColumnTrait, DbErr, EntityTrait, QueryFilter, QuerySelect, SelectColumns,
+    ColumnTrait, DbErr, EntityTrait, QueryFilter, QuerySelect,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use tower_http::services::ServeDir;
 
 use crate::{
-    entities::{self, prelude::Projects, projects},
+    entities::projects,
     state::AppState,
 };
 

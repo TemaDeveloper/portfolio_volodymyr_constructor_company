@@ -1,5 +1,5 @@
 use axum::{
-    async_trait, body::Body, extract::{rejection::PathRejection, FromRequestParts, Path, State}, http::{request::Parts, Request, Response, StatusCode}, middleware::Next, response::IntoResponse, RequestExt, RequestPartsExt
+    async_trait, body::Body, extract::{rejection::PathRejection, FromRequestParts, Path}, http::{request::Parts, Response, StatusCode}, response::IntoResponse, RequestPartsExt
 };
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter};
 use uuid::Uuid;

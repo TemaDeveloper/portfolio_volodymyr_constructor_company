@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Project</title>
+    <link rel="stylesheet" href="update_project_style.css">
+</head>
+<body>
+    <div class="project-addition-container">
+        <h1>Update Project</h1>
+        <form id="updateForm" enctype="multipart/form-data">
+            <div class="input-group">
+                <label for="title">Project Title:</label>
+                <input type="text" id="title" name="title" placeholder="Enter project title" required>
+            </div>
+            <div class="input-group">
+                <label for="image">Project Image:</label>
+                <div class="image-placeholder" id="image-placeholder">
+                    <input type="file" id="image-input" name="image" accept="image/*" style="display: none;">
+                    <button type="button" class="add-image-btn" id="add-image-btn">Add Image</button>
+                </div>
+            </div>
+            <button type="submit" class="submit-btn">Update Project</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('add-image-btn').addEventListener('click', function() {
+            document.getElementById('image-input').click();
+        });
+
+        document.getElementById('image-input').addEventListener('change', function(event) {
+            const imagePlaceholder = document.getElementById('image-placeholder');
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    imagePlaceholder.innerHTML = '';
+                    imagePlaceholder.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('updateForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('/api/update-project/1', { // Adjust the project ID and URL as needed
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Project updated successfully!');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the project.');
+            });
+        });
+    </script>
+</body>
+</html>

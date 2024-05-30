@@ -361,6 +361,9 @@ pub async fn update_project(
     if let Some(description) = project_info.description {
         project.description = sea_orm::Set(description);
     }
+    // Clear previous file names from the database
+    project.pictures = sea_orm::Set(Vec::new());
+    // Set new file names if there are any
     if !names.is_empty() {
         project.pictures = sea_orm::Set(names);
     }

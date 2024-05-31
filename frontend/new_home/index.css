@@ -1,0 +1,69 @@
+:root {
+	--color-dark-gray: #141619;
+	--color-gray: #2C2E3A;
+	--color-dark-blue: #050A44;
+	--color-blue: #0A21C0;
+	--color-light-gray: #B3B4BD;
+}
+
+#top-bar {
+	background-color: white;
+
+	display: flex;
+	align-items: center;
+	border-bottom: 0.22em var(--color-light-gray) solid;
+}
+
+#top-bar .home,
+#top-bar .projects,
+#top-bar .contact {
+	background-color: inherit;
+	border: none;
+	font-size: 1.8em;
+
+	padding-top: 0.4em;
+	padding-bottom: 0.32em;
+}
+
+#top-bar .projects,
+#top-bar .contact {
+	padding-right: 0.8em;
+	padding-left: 0.3em;
+}
+
+body,
+html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+.flex-left {
+	margin-right: auto;
+}
+
+.flex-right {
+	margin-left: auto;
+}
+
+.underline-hover {
+	position: relative;
+}
+
+.underline-hover::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 2px;
+	/* Adjust the height as needed */
+	background: currentColor;
+	/* Matches the text color */
+	transform: scaleX(0);
+	transition: transform 0.3s ease;
+}
+
+.underline-hover:hover::after {
+	transform: scaleX(1);
+}

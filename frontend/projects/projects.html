@@ -37,16 +37,28 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const carousels = document.querySelectorAll('.project-carousel');
-            carousels.forEach(carousel => {
-                $(carousel).slick({
-                    dots: true,
-                    infinite: true,
-                    speed: 300,
-                    slidesToShow: 1,
-                    adaptiveHeight: true,
-                    arrows: true
+            function initializeCarousels() {
+                const carousels = document.querySelectorAll('.project-carousel');
+                carousels.forEach(carousel => {
+                    if (!$(carousel).hasClass('slick-initialized')) {
+                        $(carousel).slick({
+                            dots: true,
+                            infinite: true,
+                            speed: 300,
+                            slidesToShow: 1,
+                            adaptiveHeight: true,
+                            arrows: true
+                        });
+                    }
                 });
+            }
+
+            initializeCarousels();
+
+            document.addEventListener('htmx:afterSwap', function(event) {
+                if (event.detail.target.id === "projects-list") {
+                    initializeCarousels();
+                }
             });
         });
     </script>

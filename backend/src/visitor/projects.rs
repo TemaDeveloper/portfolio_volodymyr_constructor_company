@@ -78,6 +78,7 @@ async fn projects_page(
             .filter(projects::Column::Year.eq(year))
             .all(&state.db_conn)
             .await?;
+        tracing::warn!("Number of projects pictures: {}", projects.last().unwrap().pictures.len());
         Ok(ProjectsPage {
             year,
             countries,

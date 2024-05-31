@@ -155,18 +155,19 @@ pub async fn create_project(
         } else {
             let bytes = field.bytes().await?;
             file_workers.push(tokio::spawn(async move {
-                // this clone is not doint memcpy
-                // it is like Arc::clone
                 let pic_info = PicInfo::from_bytes(bytes.clone()).await?;
                 let file_format = format!(
                     "{}_{field_name}.{}",
                     Uuid::new_v4(),
-                    bytes_to_img_format(&bytes).ok_or(CreateProjectError::InvalidImageFormat)?
+                    bytes_to_img_format(&bytes)
+                        .ok_or(CreateProjectError::InvalidImageFormat)?
                 );
                 Ok::<_, CreateProjectError>((pic_info, file_format, bytes))
             }));
         }
     }
+
+    tracing::warn!("Number of file workers: {}", file_workers.len());
 
     let file_workers = join_all(file_workers).await;
 

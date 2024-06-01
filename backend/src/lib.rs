@@ -18,6 +18,7 @@ use tower_http::cors::{Any, CorsLayer};
 use tower_http::limit::RequestBodyLimitLayer;
 use uuid::Uuid;
 use tokio::fs;
+use tower_http::limit::RequestBodyLimitLayer;
 
 pub mod admin {
     pub mod auth;
@@ -91,7 +92,10 @@ impl IntoResponse for CreateProjectError {
     fn into_response(self) -> Response {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            format!("There was a problem: {}", self),
+            match self {
+                Self::MultipartError(err) => format!("This one {err:?}"),
+                _ => format!("There was a problem: {}", self)
+            }
         )
             .into_response()
     }
@@ -101,7 +105,10 @@ impl IntoResponse for UpdateProjectError {
     fn into_response(self) -> Response {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            format!("There was a problem: {}", self),
+            match self {
+                Self::MultipartError(_err) => todo!(),
+                _ => format!("There was a problem: {}", self)
+            }
         )
             .into_response()
     }
@@ -404,7 +411,11 @@ pub async fn create_routes() -> anyhow::Result<Router> {
 
         .with_state(state)
         .layer(cors)
+<<<<<<< Updated upstream
         .layer(DefaultBodyLimit::max(100 * 1024 * 1024))
         .layer(RequestBodyLimitLayer::new(100 * 1024 * 1024))
     )
+=======
+        .layer(RequestBodyLimitLayer::new(100 * 1024 * 1024)))
+>>>>>>> Stashed changes
 }

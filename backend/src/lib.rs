@@ -1,8 +1,9 @@
+use admin::auth;
 use axum::extract::{multipart, DefaultBodyLimit, Multipart, Path, State};
 use axum::http::{Method, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
-use axum::Json;
+use axum::{middleware, Json};
 use axum::{Router};
 use chrono::Datelike;
 use entities::projects;
@@ -400,14 +401,18 @@ pub async fn create_routes() -> anyhow::Result<Router> {
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any);
 
+    let admin_routes = Router::new()
+        .route("/update-project/:project_id", post(update_project))
+        .route("/create-visitor", post(visitor::create))
+        .route("/projects", post(create_project))
+        .layer(middleware::from_fn_with_state(state.clone(), auth::validate_jwt));
+
     Ok(Router::new()
         .route("/auth", post(admin::auth::login))
         .route("/add-user", post(admin::auth::add_user))
-        .route("/api/update-project/:project_id", post(update_project))
-        .route("/api/create-visitor", post(visitor::create))
-        .route("/api/projects", post(create_project))
 
         .nest("/:visitor_uuid", visitor::get_visitor_router(state.clone()))
+        .nest("/api", admin_routes)
 
         .with_state(state)
         .layer(cors)

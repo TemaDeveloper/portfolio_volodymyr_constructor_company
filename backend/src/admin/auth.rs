@@ -1,13 +1,11 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Extension, Json, State},
-    http::StatusCode,
-    response::IntoResponse,
+    body::Body, extract::{Extension, Json, State}, http::{header, Request, Response, StatusCode}, middleware::Next, response::IntoResponse
 };
 use bcrypt::{hash, verify, DEFAULT_COST};
-use chrono::{NaiveDateTime, Utc};
-use jsonwebtoken::{encode, EncodingKey, Header};
+use chrono::{Duration, Local, NaiveDateTime, Utc};
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -15,9 +13,8 @@ use tokio::sync::Mutex;
 use tracing::{info, error};
 use lazy_static::lazy_static;
 
-use crate::{entities, state::AppState};
+use crate::{entities::{self, user}, state::AppState};
 
-const JWT_SECRET: &[u8] = b"secret";
 
 #[derive(Deserialize, Debug)]
 pub struct GetReqBody {
@@ -26,35 +23,67 @@ pub struct GetReqBody {
     pub password: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+
+#[derive(Debug, Serialize, Deserialize)]
 struct Claims {
-    sub: String,
-    exp: usize,
+    sub: String, // subject
+    exp: usize,  // expiration time (as UTC timestamp)
 }
 
-use jsonwebtoken::Algorithm;
+lazy_static! {
+    static ref SECRET_KEY: Arc<String> = Arc::new(generate_secret_key());
+}
 
-pub fn create_jwt(uid: &str) -> Result<String, String> {
-    let expiration = Utc::now()
-        .checked_add_signed(chrono::Duration::seconds(3600))
-        .expect("valid timestamp")
-        .timestamp();
+fn generate_secret_key() -> String {
+    use rand::Rng;
+    let mut rng = rand::thread_rng();
+    (0..32).map(|_| (rng.gen::<u8>() % 26 + 97) as char).collect()
+}
+
+pub fn create_token(sub: &str, valid_for: Duration) -> Result<String, String> {
+    let expiration = Local::now().naive_local() + valid_for;
+    let exp_timestamp = expiration.and_utc().timestamp() as usize;
 
     let claims = Claims {
-        sub: uid.to_owned(),
-        exp: expiration as usize,
+        sub: sub.to_owned(),
+        exp: exp_timestamp,
     };
-    let header = Header::new(Algorithm::HS512);
-    encode(&header, &claims, &EncodingKey::from_secret(JWT_SECRET))
-        .map_err(|_| "JWTTokenCreationError".to_string())
+
+    encode(&Header::default(), &claims, &EncodingKey::from_secret(SECRET_KEY.as_ref().as_bytes()))
+        .map_err(|e| e.to_string())
+}
+
+pub async fn validate_jwt(
+    req: Request<Body>,
+    next: Next,
+) -> Result<Response<Body>, StatusCode> {
+    if let Some(cookie) = req.headers().get("cookie") {
+        if let Ok(cookie_str) = cookie.to_str() {
+            let jwt_cookie = cookie_str
+                .split(';')
+                .find(|s| s.trim_start().starts_with("jwt="));
+
+            if let Some(jwt_cookie) = jwt_cookie {
+                let token = jwt_cookie.trim_start_matches("jwt=").trim();
+                let decoding_key = DecodingKey::from_secret(SECRET_KEY.as_ref().as_bytes());
+                let validation = Validation::new(Algorithm::HS256);
+
+                match decode::<Claims>(token, &decoding_key, &validation) {
+                    Ok(_) => return Ok(next.run(req).await),
+                    Err(_) => return Err(StatusCode::UNAUTHORIZED),
+                }
+            }
+        }
+    }
+
+    Err(StatusCode::UNAUTHORIZED)
 }
 
 pub async fn login(
     State(state): State<AppState>,
     Json(user_info): Json<GetReqBody>,
 ) -> impl IntoResponse {
-    use entities::user;
-    use sea_orm::ColumnTrait;
+    use bcrypt::verify;
 
     info!("Received user_info: {:?}", user_info);
 
@@ -74,10 +103,17 @@ pub async fn login(
             match verify(&user_info.password, &stored_password) {
                 Ok(is_valid) => {
                     if is_valid {
-                        match create_jwt(&user.email.clone().unwrap()) {
+                        match create_token(&user.email.clone().unwrap(), Duration::seconds(3600)) {
                             Ok(token) => {
                                 info!("Authentication successful for user: {:?}", user.email);
-                                return (StatusCode::OK, Json(json!({ "token": token }))).into_response();
+
+                                let mut response = (StatusCode::OK, Json(json!({ "message": "Login successful" }))).into_response();
+                                let cookie_header = format!("jwt={}; Path=/; HttpOnly", token);
+                                response.headers_mut().insert(
+                                    header::SET_COOKIE,
+                                    cookie_header.parse().unwrap(),
+                                );
+                                return response;
                             }
                             Err(err) => {
                                 error!("JWT creation error: {:?}", err);

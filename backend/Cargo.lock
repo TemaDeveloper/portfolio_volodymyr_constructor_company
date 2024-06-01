@@ -484,6 +484,7 @@ dependencies = [
  "jsonwebtoken",
  "lazy_static",
  "nestify",
+ "rand",
  "reqwest",
  "rexiv2",
  "sea-orm",

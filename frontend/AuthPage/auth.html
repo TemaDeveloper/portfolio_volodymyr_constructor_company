@@ -22,10 +22,36 @@
         </form>
     </div>
     <script>
-        document.getElementById('submit').addEventListener('click', function(event) {
+        document.getElementById('authForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the default form submission
-            // Here you can add authentication logic if needed
-            window.location.href = '../projects/projects.html'; // Redirect to additional.html
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Login successful:', data);
+                    // Handle successful login (e.g., store token, redirect, etc.)
+                    window.location.href = '../ProjectAddition/addition.html'; // Redirect to additional.html
+                } else {
+                    const error = await response.json();
+                    console.error('Login failed:', error);
+                    // Handle login failure (e.g., show error message)
+                    alert('Login failed: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during login');
+            }
         });
     </script>
 </body>

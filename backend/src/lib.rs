@@ -395,6 +395,7 @@ pub async fn create_routes() -> anyhow::Result<Router> {
 
     Ok(Router::new()
         .route("/auth", post(admin::auth::login))
+        .route("/add-user", post(admin::auth::add_user))
         .route("/api/update-project/:project_id", post(update_project))
         .route("/api/create-visitor", post(visitor::create))
         .route("/api/projects", post(create_project))

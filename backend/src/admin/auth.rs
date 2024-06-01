@@ -1,17 +1,17 @@
 use axum::{
-    extract::{Extension, Json},
+    extract::{Extension, Json, State},
     http::StatusCode,
     response::IntoResponse,
 };
-use bcrypt::verify;
+use bcrypt::{hash, verify, DEFAULT_COST};
 use chrono::Utc;
 use jsonwebtoken::{encode, EncodingKey, Header};
-use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::{info, error};
 
-use crate::entities;
+use crate::{entities, state::AppState};
 
 const JWT_SECRET: &[u8] = b"secret";
 
@@ -46,7 +46,7 @@ pub fn create_jwt(uid: &str) -> Result<String, String> {
 }
 
 pub async fn login(
-    Extension(db_conn): Extension<DatabaseConnection>,
+    State(state): State<AppState>,
     Json(user_info): Json<GetReqBody>,
 ) -> impl IntoResponse {
     use entities::user;
@@ -60,7 +60,7 @@ pub async fn login(
                 .eq(user_info.name.as_deref().unwrap_or_default())
                 .or(user::Column::Email.eq(user_info.email.as_deref().unwrap_or_default())),
         )
-        .one(&db_conn)
+        .one(&state.db_conn)
         .await;
 
     match user_result {
@@ -98,6 +98,64 @@ pub async fn login(
         Err(e) => {
             error!("Database query error: {:?}", e);
             return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Database query error" }))).into_response();
+        }
+    }
+}
+
+#[derive(Deserialize, Debug)]
+pub struct AddUserReqBody {
+    pub name: String,
+    pub last_name: String,
+    pub email: String,
+    pub password: String,
+}
+
+pub async fn add_user(
+    State(state): State<AppState>,
+    Json(user_info): Json<AddUserReqBody>,
+) -> impl IntoResponse {
+    use entities::user;
+
+    info!("Received user_info: {:?}", user_info);
+
+    // Check if the user already exists
+    let existing_user = user::Entity::find()
+        .filter(user::Column::Email.eq(user_info.email.clone()))
+        .one(&state.db_conn)
+        .await;
+
+    if let Ok(Some(_)) = existing_user {
+        info!("User with email {} already exists", user_info.email);
+        return (StatusCode::CONFLICT, Json(json!({ "error": "User already exists" }))).into_response();
+    }
+
+    // Hash the password
+    let hashed_password = match hash(&user_info.password, DEFAULT_COST) {
+        Ok(pwd) => pwd,
+        Err(e) => {
+            error!("Password hashing error: {:?}", e);
+            return (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Password hashing error" }))).into_response();
+        }
+    };
+
+    // Create the new user
+    let new_user = user::ActiveModel {
+        name: sea_orm::Set(user_info.name.clone()),
+        last_name: sea_orm::Set(user_info.last_name.clone()),
+        email: sea_orm::Set(Some(user_info.email.clone())),
+        password: sea_orm::Set(hashed_password.into_bytes()),
+        ..Default::default()
+    };
+
+    // Insert the new user into the database
+    match new_user.insert(&state.db_conn).await {
+        Ok(user) => {
+            info!("User created: {:?}", user);
+            (StatusCode::CREATED, Json(json!({ "message": "User created" }))).into_response()
+        }
+        Err(e) => {
+            error!("Database insertion error: {:?}", e);
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Database insertion error" }))).into_response()
         }
     }
 }

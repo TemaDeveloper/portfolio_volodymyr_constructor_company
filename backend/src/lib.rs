@@ -1,4 +1,4 @@
-use axum::extract::{multipart, Multipart, Path, State};
+use axum::extract::{multipart, DefaultBodyLimit, Multipart, Path, State};
 use axum::http::{Method, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
@@ -15,6 +15,7 @@ use tokio::fs::{OpenOptions};
 use tokio::io::AsyncWriteExt;
 use tokio::task::JoinError;
 use tower_http::cors::{Any, CorsLayer};
+use tower_http::limit::RequestBodyLimitLayer;
 use uuid::Uuid;
 use tokio::fs;
 
@@ -153,7 +154,7 @@ pub async fn create_project(
             let bytes = field.bytes().await?;
             project_info = Some(serde_json::from_slice(&bytes)?);
         } else {
-            let bytes = field.bytes().await?;
+            let bytes = field.bytes().await.unwrap();
             file_workers.push(tokio::spawn(async move {
                 let pic_info = PicInfo::from_bytes(bytes.clone()).await?;
                 let file_format = format!(
@@ -401,6 +402,8 @@ pub async fn create_routes() -> anyhow::Result<Router> {
         .nest("/:visitor_uuid", visitor::get_visitor_router(state.clone()))
 
         .with_state(state)
-        .layer(cors))
+        .layer(cors)
+        .layer(DefaultBodyLimit::max(100 * 1024 * 1024))
+        .layer(RequestBodyLimitLayer::new(100 * 1024 * 1024))
+    )
 }
-

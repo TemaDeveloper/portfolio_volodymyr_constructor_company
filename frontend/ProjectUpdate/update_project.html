@@ -15,13 +15,26 @@
                 <input type="text" id="title" name="title" placeholder="Enter project title" required>
             </div>
             <div class="input-group">
+                <label for="description">Project Description:</label>
+                <input type="text" id="description" name="description" placeholder="Enter project description" required>
+            </div>
+            <div class="input-group">
                 <label for="image">Project Image:</label>
                 <div class="image-placeholder" id="image-placeholder">
                     <input type="file" id="image-input" name="image" accept="image/*" style="display: none;">
                     <button type="button" class="add-image-btn" id="add-image-btn">Add Image</button>
                 </div>
             </div>
+            <div class="input-group">
+                <label for="year">Project Year:</label>
+                <input type="text" id="year" name="year" placeholder="Enter project year" required>
+            </div>
+            <div class="input-group">
+                <label for="country">Project Country:</label>
+                <input type="text" id="country" name="country" placeholder="Enter project country" required>
+            </div>
             <button type="submit" class="submit-btn">Update Project</button>
+            <button type="delete" class="submit-btn">Delete Project</button>
         </form>
     </div>
 

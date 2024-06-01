@@ -20,6 +20,7 @@
             </div>
             <button id="submit" type="submit">Done</button>
         </form>
+        <div id="error-message" style="color: red;"></div>
     </div>
     <script>
         document.getElementById('authForm').addEventListener('submit', async function(event) {
@@ -40,19 +41,25 @@
                 if (response.ok) {
                     const data = await response.json();
                     console.log('Login successful:', data);
-                    // Handle successful login (e.g., store token, redirect, etc.)
-                    window.location.href = '../ProjectAddition/addition.html'; // Redirect to additional.html
+                    // Handle successful login (e.g., store token, set cookie, redirect, etc.)
+
+                    // Acquire auth-token and set a cookie
+                    document.cookie = `auth-token=${data.token}; path=/;`;
+
+                    // Redirect to a placeholder URL
+                    window.location.href = 'http://your-backend-url.com/redirect-url';
                 } else {
                     const error = await response.json();
                     console.error('Login failed:', error);
                     // Handle login failure (e.g., show error message)
-                    alert('Login failed: ' + error.error);
+                    document.getElementById('error-message').textContent = 'Login failed: ' + error.error;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred during login');
+                document.getElementById('error-message').textContent = 'An error occurred during login';
             }
         });
     </script>
 </body>
 </html>
+

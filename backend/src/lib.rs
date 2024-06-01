@@ -18,7 +18,7 @@ use tower_http::cors::{Any, CorsLayer};
 use tower_http::limit::RequestBodyLimitLayer;
 use uuid::Uuid;
 use tokio::fs;
-use tower_http::limit::RequestBodyLimitLayer;
+
 
 pub mod admin {
     pub mod auth;
@@ -411,11 +411,8 @@ pub async fn create_routes() -> anyhow::Result<Router> {
 
         .with_state(state)
         .layer(cors)
-<<<<<<< Updated upstream
         .layer(DefaultBodyLimit::max(100 * 1024 * 1024))
         .layer(RequestBodyLimitLayer::new(100 * 1024 * 1024))
     )
-=======
-        .layer(RequestBodyLimitLayer::new(100 * 1024 * 1024)))
->>>>>>> Stashed changes
+
 }

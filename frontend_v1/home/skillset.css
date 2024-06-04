@@ -1,0 +1,81 @@
+/* Skillset Section */
+.skillset {
+    background-color: var(--level-1);
+    padding: 50px 0;
+}
+
+.skillset-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding-left: 10%;
+    padding-right: 10%;
+    box-sizing: border-box;
+}
+
+.skillset-header {
+    width: 30%;
+    text-align: left;
+}
+
+.skillset-header h2 {
+    font-size: 55px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding-right: 5%;
+}
+
+.skillset-header p {
+    font-size: 18px;
+    font-weight: regular;
+}
+
+.skills {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 65%;
+}
+
+.skill {
+    background: var(--base);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.skill h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.skill p {
+    font-size: 18px;
+    font-weight: regular;
+}
+
+@media (max-width: 768px) {
+    .skillset-container {
+        flex-direction: column;
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+
+    .skillset-header, .skills {
+        width: 100%;
+    }
+
+    .skills {
+        grid-template-columns: 1fr; /* Stack items vertically */
+    }
+
+    .skillset-header h2 {
+        font-size: 32px;
+        text-align: center;
+    }
+
+    .skillset-header p {
+        font-size: 16px;
+        text-align: center;
+    }
+}

@@ -1,0 +1,189 @@
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background: #b68c5a; /* Match the HomePage background color */
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+}
+
+/* Color Variables */
+:root {
+    --base: #b68c5a;
+    --level-1: #e5c58f;
+    --light-grey: #f5e3cc;
+    --dark-grey: #e2b54e;
+    --text: #FFFFFF;
+    --primary: #e2b54e;
+    --green-accent: #3CC74E;
+    --pink-accent: #E95D90;
+    --peach-accent: #FFF3E4;
+    --violet-accent: #FBE4FF;
+}
+
+/* Font Sizes */
+:root {
+    --label-1: 117px;
+    --heading-1: 78px;
+    --heading-2: 55px;
+    --heading-3: 24px;
+    --heading-4: 18px;
+    --heading-5: 16px;
+    --body-1: 18px;
+    --body-2: 16px;
+    --overline: 16px;
+    --button: 18px;
+}
+
+.project-addition-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1 {
+    font-size: var(--heading-1);
+    color: var(--text);
+    margin-bottom: 20px;
+}
+
+.input-group {
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: left;
+    box-sizing: border-box;
+    padding: 0 10px; /* Ensures equal padding on both sides */
+}
+
+.input-group label {
+    font-size: var(--overline);
+    color: var(--light-grey);
+    display: block;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    font-size: var(--body-1);
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    background: var(--level-1);
+    color: var(--text);
+    box-sizing: border-box;
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 300px;
+    border: 2px dashed var(--primary);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.add-image-btn {
+    background: var(--primary);
+    color: var(--text);
+    border: none;
+    padding: 10px 20px;
+    font-size: var(--button);
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.submit-btn {
+    background: var(--primary);
+    color: var(--text);
+    border: none;
+    padding: 10px 20px;
+    font-size: var(--button);
+    cursor: pointer;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: var(--heading-2);
+    color: var(--text);
+    margin-bottom: 20px;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.grid-item {
+    background: var(--level-1);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.grid-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.details {
+    padding: 10px;
+    text-align: left;
+}
+
+.details .title {
+    font-size: var(--heading-4);
+    color: var (--text);
+    margin-top: 10px;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+    .project-addition-container {
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    h1 {
+        font-size: calc(var(--heading-1) * 0.5);
+    }
+
+    .input-group input {
+        font-size: calc(var(--body-1) * 0.8);
+        padding: 10px;
+    }
+
+    .add-image-btn, .submit-btn {
+        font-size: calc(var(--button) * 0.8);
+        padding: 8px 16px;
+    }
+
+    h2 {
+        font-size: calc(var(--heading-2) * 0.8);
+    }
+
+    .grid-item img {
+        height: 150px;
+    }
+
+    .details .title {
+        font-size: calc(var(--heading-4) * 0.8);
+    }
+}

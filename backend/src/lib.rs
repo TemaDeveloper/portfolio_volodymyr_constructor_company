@@ -404,8 +404,8 @@ pub async fn create_routes() -> anyhow::Result<Router> {
     let admin_routes = Router::new()
         .route("/update-project/:project_id", post(update_project))
         .route("/create-visitor", post(visitor::create))
-        .route("/projects", post(create_project))
-        .layer(middleware::from_fn_with_state(state.clone(), auth::validate_jwt));
+        .route("/projects", post(create_project));
+        // .layer(middleware::from_fn_with_state(state.clone(), auth::validate_jwt));
 
     Ok(Router::new()
         .route("/auth", post(admin::auth::login))

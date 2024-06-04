@@ -65,6 +65,7 @@ pub async fn validate_jwt(
 
             if let Some(jwt_cookie) = jwt_cookie {
                 let token = jwt_cookie.trim_start_matches("jwt=").trim();
+                tracing::info!("Cookie: {token}");
                 let decoding_key = DecodingKey::from_secret(SECRET_KEY.as_ref().as_bytes());
                 let validation = Validation::new(Algorithm::HS256);
 
@@ -72,6 +73,8 @@ pub async fn validate_jwt(
                     Ok(_) => return Ok(next.run(req).await),
                     Err(_) => return Err(StatusCode::UNAUTHORIZED),
                 }
+            } else {
+                tracing::error!("No cookie found");
             }
         }
     }

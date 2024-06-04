@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Volodymyr - Constructor</title>
+        <link rel="stylesheet" href="home/assets/styles.css">
+        <link rel="stylesheet" href="home/assets/header.css">
+        <link rel="stylesheet" href="home/assets/hero.css">
+        <link rel="stylesheet" href="home/assets/experience.css">
+        <link rel="stylesheet" href="home/assets/skillset.css">
+        <link rel="stylesheet" href="home/assets/testimonials.css">
+        <link rel="stylesheet" href="home/assets/contact.css">
+        <link rel="stylesheet" href="home/assets/footer.css">
+    </head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1>Volodymyr</h1>
+            <nav>
+                <ul>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#reviews">Reviews</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="hero-image">
+                    <img src="images/volodymyr_photo.jpg" alt="Volodymyr">
+                </div>
+                <div class="hero-text">
+                    <h2>I'm<br>{{ first_name }} {{ last_name }}</h2>
+                    <p>{{ email }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="experience">
+        <div class="container experience-container">
+            <p class="overline">Work Experience</p>
+            <h2>The Work I’ve done in different years</h2>
+            <div class="years">
+                {% for year in years %}
+                <div class="year" data-year="{{ year }}">
+                        <div class="folder">
+                            <div class="folder-inside"></div>
+                        </div>
+                        <h3>{{ year }}</h3>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.folder').forEach(folder => {
+            folder.addEventListener('click', function() {
+                const year = this.closest('.year').dataset.year;
+                window.location.href = `projects?year=${year}`;
+            });
+        });
+    </script>
+
+    <section id="services" class="skillset">
+        <div class="container skillset-container">
+            <div class="skillset-header">
+                <h2>Services</h2>
+                <p>With skills in a plethora of different fields of design, I am the perfect person to hire when it comes to a full-fledged project. Whatever your needs are, I can pretty much take on any challenge.</p>
+            </div>
+            <div class="skills">
+                <div class="skill">
+                    <h3>Product Design</h3>
+                    <p>Working at Facebook taught me a lot about how to understand users, solve problems, and build great products.</p>
+                </div>
+                <div class="skill">
+                    <h3>Visual Design</h3>
+                    <p>My experience at Airbnb has helped me learn to develop the eye for design.</p>
+                </div>
+                <div class="skill">
+                    <h3>Motion Design</h3>
+                    <p>I started my design journey with motion design, bringing brands alive through animation.</p>
+                </div>
+                <div class="skill">
+                    <h3>Photography</h3>
+                    <p>Discovering photography taught me to capture the world from a different perspective.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="reviews" class="testimonials">
+        <div class="container testimonials-container">
+            <div class="testimonials-header">
+                <h2>This is what people say about me</h2>
+            </div>
+            <div class="testimonial-cards">
+                <div class="testimonial">
+                    <img src="images/volodymyr_photo.jpg" alt="Reviewer 1">
+                    <p>"Robin is one of the best designers I have worked with in my entire life. He is a designer who is very capable of taking up complex projects and delivers impeccable design."</p>
+                    <span>Vincent Reid, CEO, Company 1</span>
+                </div>
+                <div class="testimonial">
+                    <img src="images/volodymyr_photo.jpg" alt="Reviewer 2">
+                    <p>"I think Robin has an incredible gift. It has been an absolute pleasure to work with a designer of this caliber."</p>
+                    <span>Emily Parker, CEO, Company 2</span>
+                </div>
+                <div class="testimonial">
+                    <img src="images/volodymyr_photo.jpg" alt="Reviewer 3">
+                    <p>"All I can say that, Robin is a phenomenal designer. The wavelength at which he thinks is astounding. I love the look, passion and attention to detail in the design."</p>
+                    <span>CEO, Company 3</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container contact-container">
+            <div class="contact-header">
+                <h2>Contact Us</h2>
+                <p>Feel free to reach out to us for any inquiries or questions.</p>
+            </div>
+            <form class="contact-form">
+                <div class="input-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </section>
+    
+
+    <footer>
+        <div class="container footer-container">
+            <p>&copy; 2023 Volodymyr</p>
+            
+        </div>
+    </footer>
+</body>
+</html>

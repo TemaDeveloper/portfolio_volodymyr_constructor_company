@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Addition Page</title>
+    <link rel="stylesheet" href="project_addition.css">
+</head>
+<body>
+    <div class="project-addition-container">
+        <h1>Add a New Project</h1>
+        <div class="input-group">
+            <label for="project-title" class="overline">Project Title</label>
+            <input type="text" id="project-title" name="project-title" placeholder="Enter project title here">
+        </div>
+        <div class="image-placeholder" id="image-placeholder">
+            <input type="file" id="image-input" accept="image/*" style="display: none;">
+            <button class="add-image-btn" id="add-image-btn">Add Image</button>
+        </div>
+        <button class="submit-btn" id="submit-btn">Submit</button>
+        <h2>Recently Added Projects</h2>
+        <div class="gallery" id="recent-projects">
+            <!-- Recently added projects will be displayed here -->
+        </div>
+    </div>
+    <script src="project_addition.js"></script>
+</body>
+</html>

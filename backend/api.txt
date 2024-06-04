@@ -12,3 +12,8 @@ we will have also the all projects folders (contains all of the projects even th
 gallery: 
 - get_all_projects -> array of projects
 
+4 endpoints:
+    -> get all projects by year and country
+    -> get all countries by year 
+    -> get all years 
+    -> get all countries

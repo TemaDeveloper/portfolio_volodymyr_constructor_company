@@ -15,8 +15,13 @@ class AppRouter extends _i2.RootStackRouter {
           routeData: routeData, child: _i1.HomePage());
     },
     ProjectsRoute.name: (routeData) {
+      final args = routeData.argsAs<ProjectsRouteArgs>();
       return _i2.MaterialPageX<dynamic>(
-          routeData: routeData, child: _i4.ProjectsPage());
+          routeData: routeData,
+          child: _i4.ProjectsPage(
+            title: args.title,
+            description: args.description,
+          ));
     }
   };
 
@@ -37,8 +42,21 @@ class HomeRoute extends _i2.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.ProjectsPage]
-class ProjectsRoute extends _i2.PageRouteInfo<void> {
-  const ProjectsRoute() : super(ProjectsRoute.name, path: '/projects');
+class ProjectsRoute extends _i2.PageRouteInfo<ProjectsRouteArgs> {
+  ProjectsRoute({required String title, required String description})
+      : super(
+          ProjectsRoute.name,
+          path: '/projects',
+          args: ProjectsRouteArgs(title: title, description: description),
+        );
 
   static const String name = 'ProjectsRoute';
 }
+
+class ProjectsRouteArgs {
+  final String title;
+  final String description;
+
+  ProjectsRouteArgs({required this.title, required this.description});
+}
+

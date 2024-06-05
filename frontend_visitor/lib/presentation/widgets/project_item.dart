@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nimbus/presentation/pages/projects/projects_page.dart';
 import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:nimbus/values/values.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:nimbus/presentation/routes/router.gr.dart';
 
 import 'animated_indicator.dart';
 
@@ -189,41 +192,51 @@ class ProjectCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    return Container(
-      width: width,
-      height: height,
-      color: color ?? Colors.black.withOpacity(0.8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          AnimatedHoverIndicator2(
-            animation: animation,
-            indicatorColor: indicatorColor,
+    return GestureDetector(
+      onTap: (){
+        context.router.push(
+          ProjectsRoute(
+            title: title,
+            description: subtitle,
           ),
-          SpaceW16(),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: titleStyle ??
-                    textTheme.titleLarge?.copyWith(
-                      color: AppColors.white,
-                    ),
-              ),
-              SpaceH8(),
-              Text(
-                subtitle,
-                style: subtitleStyle ??
-                    textTheme.titleSmall?.copyWith(
-                      color: AppColors.white,
-                      fontSize: Sizes.TEXT_SIZE_16,
-                    ),
-              ),
-            ],
-          )
-        ],
+        );
+      },
+      child: Container(
+        width: width,
+        height: height,
+        color: color ?? Colors.black.withOpacity(0.8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AnimatedHoverIndicator2(
+              animation: animation,
+              indicatorColor: indicatorColor,
+            ),
+            SpaceW16(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: titleStyle ??
+                      textTheme.titleLarge?.copyWith(
+                        color: AppColors.white,
+                      ),
+                ),
+                SpaceH8(),
+                Text(
+                  subtitle,
+                  style: subtitleStyle ??
+                      textTheme.titleSmall?.copyWith(
+                        color: AppColors.white,
+                        fontSize: Sizes.TEXT_SIZE_16,
+                      ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

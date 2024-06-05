@@ -106,7 +106,7 @@ class Data {
     ProjectCategoryData(title: StringConst.ALL, number: 6, isSelected: true),
     ProjectCategoryData(title: StringConst.BRANDING, number: 1),
     ProjectCategoryData(title: StringConst.PACKAGING, number: 1),
-    ProjectCategoryData(title: StringConst.PHOTOGRAPHER, number: 2),
+    ProjectCategoryData(title: StringConst.YEAR, number: 2),
     ProjectCategoryData(title: StringConst.WEB_DESIGN, number: 3),
   ];
 

@@ -111,15 +111,6 @@ class _ProjectsSectionState extends State<ProjectsSection>
                   children: [
                     _buildNimbusInfoSectionSm(),
                     SpaceH40(),
-                    NimbusButton(
-                      buttonTitle: StringConst.ALL_PROJECTS,
-                      buttonColor: AppColors.primaryColor,
-                      onPressed: () {
-                                                context.router.push(ProjectsRoute());
-
-                      },
-                    ),
-                    SpaceH40(),
                     Wrap(
                       spacing: kSpacing,
                       runSpacing: kRunSpacing,
@@ -163,15 +154,7 @@ class _ProjectsSectionState extends State<ProjectsSection>
                             child: _buildNimbusInfoSectionLg(),
                           ),
                           Spacer(),
-                          NimbusButton(
-                            buttonTitle: StringConst.ALL_PROJECTS,
-                            buttonColor: AppColors.primaryColor,
-                            onPressed: () {
-                              context.router.push(ProjectsRoute());
-
-
-                            },
-                          ),
+                          
                         ],
                       ),
                     ),

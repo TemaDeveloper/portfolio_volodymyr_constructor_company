@@ -102,16 +102,17 @@ class StringConst {
       "Product Designer and Digital Creative Director working in design field for 13 years so far, specialized in UI/UX, Branding and digital designs. These are the words we live by in everything we do.";
   static const String ALL_PROJECTS = "All Projects";
   static const String ALL = "All";
-  static const String BRANDING = "Branding";
-  static const String PACKAGING = "Packaging";
-  static const String PHOTOGRAPHY = "Photography";
-  static const String WEB_DESIGN = "Web Design";
-  static const String PORTFOLIO_1_TITLE = "Urban Experience";
-  static const String PORTFOLIO_2_TITLE = "Graphic Design";
-  static const String PORTFOLIO_3_TITLE = "Launch Product";
-  static const String PORTFOLIO_4_TITLE = "3D Animation";
-  static const String PORTFOLIO_5_TITLE = "Collect Idea";
-  static const String PORTFOLIO_6_TITLE = "Company Branding";
+  static const String BRANDING = "2020";
+  static const String PACKAGING = "2021";
+  static const String PHOTOGRAPHY = "2022";
+  static const String YEAR = "2022";
+  static const String WEB_DESIGN = "2023";
+  static const String PORTFOLIO_1_TITLE = "Italy";
+  static const String PORTFOLIO_2_TITLE = "Germany";
+  static const String PORTFOLIO_3_TITLE = "Canada";
+  static const String PORTFOLIO_4_TITLE = "USA";
+  static const String PORTFOLIO_5_TITLE = "Ukraine";
+  static const String PORTFOLIO_6_TITLE = "Checzch";
 
   //Awards & Section
   static const String MY = "My";

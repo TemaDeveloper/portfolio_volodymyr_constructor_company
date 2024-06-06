@@ -6,6 +6,7 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "projects")]
 pub struct Model {
     pub year: i32,
+    #[sea_orm(column_type = "Text")]
     pub country: String,
     #[sea_orm(column_type = "Double")]
     pub latitude: f64,

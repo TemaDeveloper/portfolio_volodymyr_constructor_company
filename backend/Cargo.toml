@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.86"
-askama = { version = "0.12.1", features = ["serde", "serde-json", "serde_json", "with-axum"] }
 async-trait = "0.1.80"
 axum = {version = "0.7.5", features = ["multipart"]}
 bcrypt = "0.15.1"
@@ -30,8 +29,9 @@ tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 uuid = {version = "1.8.0", features = ["v4"]}
 jsonwebtoken = "9.3.0"
-askama_axum = "0.4.0"
 rand = "0.8.5"
+axum-extra = { version = "0.9.3", features = ["cookie", "typed-header"] }
+tower-cookies = "0.10.0"
 
 [dependencies.sea-orm-migration]
 version = "0.12.15"

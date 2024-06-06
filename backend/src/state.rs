@@ -1,16 +1,17 @@
 use crate::entities::visitor;
-use chrono::{NaiveDateTime, TimeDelta};
-use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
-use sea_orm::{ColumnTrait, DatabaseConnection, DbErr, EntityTrait, QueryFilter};
-use serde::{Deserialize, Serialize};
-use std::{env, sync::Arc, time::Duration};
-use tokio::sync::Mutex;
+use lazy_static::lazy_static;
+use rand::{distributions::Alphanumeric, Rng};
+use sea_orm::{ColumnTrait, DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryFilter};
+use std::{env, time::Duration};
+use uuid::Uuid;
 
-
-#[derive(Debug, Deserialize, Serialize)]
-struct Claims {
-    sub: String,
-    exp: usize,
+lazy_static! {
+    /// NOTE: regenerated after each server restart
+    pub static ref SECRET_KEY: String = rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(32)
+        .map(char::from)
+        .collect();
 }
 
 #[derive(Clone)]
@@ -52,5 +53,19 @@ impl AppState {
         });
 
         Ok(s)
+    }
+
+    pub async fn validate_visitor(&self, uuid: &Uuid) -> Result<bool, DbErr> {
+        let count = visitor::Entity::find()
+            .filter(visitor::Column::Uuid.eq(*uuid))
+            .filter(visitor::Column::TimeOut.gte(chrono::Local::now().naive_local()))
+            .count(&self.db_conn)
+            .await?;
+
+        if count > 1 {
+            tracing::warn!("It's probaly an error, or there are 2 duplicate uuids");
+        }
+
+        Ok(count == 1)
     }
 }

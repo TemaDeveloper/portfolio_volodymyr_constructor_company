@@ -21,22 +21,19 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(User::Name)
                             .string()
-                            .not_null()
-                            .char_len(255)
                     )
                     .col(
                         ColumnDef::new(User::LastName)
                             .string()
-                            .not_null()
-                            .text()
                     )
                     .col(
                         ColumnDef::new(User::Email)
                             .string()
+                            .not_null()
                     )
                     .col(
                         ColumnDef::new(User::Password)
-                            .binary()
+                            .string()
                             .not_null()
                     )
                     .to_owned(),

@@ -41,7 +41,7 @@ class CreateProjectRequest {
       };
 }
 
-Future<bool> uploadProject(CreateProjectRequest project, List<File> pictures) async {
+Future<bool> createProject(CreateProjectRequest project, List<File> pictures) async {
   const String url = 'https://yourapi.com/upload_project';
 
   // Convert project to JSON

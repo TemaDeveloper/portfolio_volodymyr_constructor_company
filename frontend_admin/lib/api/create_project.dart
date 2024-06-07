@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:html'; // For FileUploadInputElement
 import 'package:http/http.dart' as http;
+import 'package:nimbus/api/constants.dart';
 
 class GeoData {
   final String country;
@@ -42,7 +43,7 @@ class CreateProjectRequest {
 }
 
 Future<bool> createProject(CreateProjectRequest project, List<File> pictures) async {
-  const String url = 'https://yourapi.com/upload_project';
+  final url = "$baseUrl/api/projects";
 
   // Convert project to JSON
   String projectJson = json.encode(project.toJson());

@@ -39,6 +39,7 @@ class Project {
 
 Future<List<Project>?> getProjects({String? country, int? year}) async {
   Map<String, String> queryParams = {};
+  String url = "$baseUrl/api/projects";
 
   if (country != null) {
     queryParams['country'] = country;
@@ -48,7 +49,7 @@ Future<List<Project>?> getProjects({String? country, int? year}) async {
   }
 
   String queryString = Uri(queryParameters: queryParams).query;
-  String url = queryString.isNotEmpty ? '$baseUrl?$queryString' : baseUrl;
+  url = queryString.isNotEmpty ? '$url?$queryString' : url;
   final response = await http.get(Uri.parse(url));
 
   if (response.statusCode == 200) {

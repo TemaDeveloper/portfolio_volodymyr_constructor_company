@@ -27,6 +27,7 @@ dependencies:
   animated_text_kit: ^4.2.1
   visibility_detector: ^0.2.2
   gap: ^3.0.1  
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:

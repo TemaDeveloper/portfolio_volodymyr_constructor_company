@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nimbus/api/auth.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
 import 'package:nimbus/presentation/widgets/spaces.dart';
@@ -6,7 +7,33 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
 
-class AuthPage extends StatelessWidget {
+class AuthPage extends StatefulWidget {
+  @override
+  _AuthPageState createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      final email = _emailController.text;
+      final password = _passwordController.text;
+
+      final success = await auth(email, password);
+
+      if (success) {
+        context.router.push(HomeRoute());
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed. Please check your credentials and try again.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +66,10 @@ class AuthPage extends StatelessWidget {
                         ),
                         SpaceH20(),
                         _buildAuthForm(context), // Pass context here
+                        SpaceH20(),
+                        TextButton(onPressed: (){
+                          context.router.push(SignUpRoute());
+                        }, child: Text("Sign up")),
                       ],
                     ),
                   ),
@@ -53,18 +84,27 @@ class AuthPage extends StatelessWidget {
 
   Widget _buildAuthForm(BuildContext context) { // Receive context here
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           TextFormField(
+            controller: _emailController,
             decoration: InputDecoration(
               labelText: 'Email',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your email';
+              }
+              return null;
+            },
           ),
           SpaceH20(),
           TextFormField(
+            controller: _passwordController,
             decoration: InputDecoration(
               labelText: 'Password',
               border: OutlineInputBorder(
@@ -72,13 +112,17 @@ class AuthPage extends StatelessWidget {
               ),
             ),
             obscureText: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your password';
+              }
+              return null;
+            },
           ),
           SpaceH40(),
           NimbusButton(
             buttonTitle: "Login",
-            onPressed: () {
-              context.router.push(HomeRoute());
-            },
+            onPressed: _login,
           ),
         ],
       ),
@@ -90,3 +134,6 @@ class AuthPage extends StatelessWidget {
     return width < RefinedBreakpoints().tabletLarge;
   }
 }
+
+
+

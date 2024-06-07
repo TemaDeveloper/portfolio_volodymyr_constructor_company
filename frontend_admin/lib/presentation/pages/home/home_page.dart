@@ -1,10 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
@@ -18,6 +18,8 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:nimbus/api/create_project.dart'; 
 import 'package:nimbus/api/file_picker_helper.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -52,6 +54,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   File? _imageFile;
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
+  TextEditingController _yearController = TextEditingController();
+  TextEditingController _countryController = TextEditingController();
 
   @override
   void initState() {
@@ -89,6 +93,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _projectController.dispose();
     _titleController.dispose();
     _descriptionController.dispose();
+    _yearController.dispose();
+    _countryController.dispose();
     super.dispose();
   }
 
@@ -101,53 +107,92 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> _pickImage() async {
-  final pickedFile = await pickFile();
-  if (pickedFile != null) {
-    setState(() {
-      webImage = pickedFile.bytes;
-      _imageFile = File(pickedFile.name); // Only for the purpose of displaying the image in mobile
-    });
+    final pickedFile = await pickFile();
+    if (pickedFile != null) {
+      setState(() {
+        webImage = pickedFile.bytes;
+        _imageFile = File(pickedFile.name); // Only for the purpose of displaying the image in mobile
+      });
+    }
   }
-}
 
-Future<void> _createProject() async {
-  if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please fill all the fields')),
+  Future<bool> _createProject(CreateProjectRequest project, List<CustomPickedFile> pictures) async {
+    final url = "$baseUrl/api/projects";
+
+    // Create multipart request
+    final request = http.MultipartRequest('POST', Uri.parse(url));
+
+    // Add JSON data as a field
+    request.fields['json'] = json.encode(project.toJson());
+
+    // Add pictures as files
+    for (CustomPickedFile picture in pictures) {
+      request.files.add(http.MultipartFile.fromBytes(
+        'pictures',
+        picture.bytes,
+        filename: picture.name,
+        contentType: MediaType('image', 'jpeg'),
+      ));
+    }
+
+    // Send the request
+    try {
+      final response = await request.send();
+
+      // Check the status code
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('Failed to upload project: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Error uploading project: $e');
+      return false;
+    }
+  }
+
+  Future<void> _addProject() async {
+    if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all the fields')),
+      );
+      return;
+    }
+
+    final project = CreateProjectRequest(
+      name: _titleController.text,
+      description: _descriptionController.text,
+      year: int.parse(_yearController.text),
+      geoData: GeoData(country: _countryController.text, latitude: 0, longitude: 0),
     );
-    return;
+
+    List<CustomPickedFile> pictures = [];
+    if (webImage != null) {
+      pictures.add(CustomPickedFile(bytes: webImage!, name: 'image.png'));
+    }
+
+    bool success = await _createProject(project, pictures);
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Project created successfully')),
+      );
+      // Clear the form
+      setState(() {
+        _titleController.clear();
+        _descriptionController.clear();
+        _yearController.clear();
+        _countryController.clear();
+        _imageFile = null;
+        webImage = null;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create project')),
+      );
+    }
   }
-
-  final project = CreateProjectRequest(
-    name: _titleController.text,
-    description: _descriptionController.text,
-    year: DateTime.now().year,
-  );
-
-  List<CustomPickedFile> pictures = [];
-  if (webImage != null) {
-    pictures.add(CustomPickedFile(bytes: webImage!, name: 'image.png'));
-  }
-
-  bool success = await createProject(project, pictures);
-
-  if (success) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Project created successfully')),
-    );
-    // Clear the form
-    setState(() {
-      _titleController.clear();
-      _descriptionController.clear();
-      _imageFile = null;
-      webImage = null;
-    });
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to create project')),
-    );
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -328,9 +373,29 @@ Future<void> _createProject() async {
               ),
             ),
             SpaceH20(),
+            TextField(
+              controller: _yearController,
+              decoration: InputDecoration(
+                labelText: 'Project Year',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SpaceH20(),
+            TextField(
+              controller: _countryController,
+              decoration: InputDecoration(
+                labelText: 'Project Country',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SpaceH20(),
             NimbusButton(
               buttonTitle: "Add Project",
-              onPressed: _createProject,
+              onPressed: _addProject,
             ),
           ],
         ),

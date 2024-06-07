@@ -33,7 +33,7 @@ class CreateProjectRequest {
     required this.name,
     required this.description,
     this.year,
-    this.geoData,
+    this.geoData, 
   });
 
   Map<String, dynamic> toJson() => {

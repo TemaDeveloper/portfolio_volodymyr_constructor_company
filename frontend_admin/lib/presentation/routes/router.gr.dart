@@ -4,6 +4,7 @@ import 'package:flutter/material.dart' as _i3;
 import '../pages/auth/auth_page.dart' as _i1;
 import '../pages/home/home_page.dart' as _i4;
 import '../pages/home/upgrade_project_page.dart' as _i5; // Import UpgradeProjectPage
+import '../pages/auth/sign_up.dart' as _i6;
 
 class AppRouter extends _i2.RootStackRouter {
   AppRouter([_i3.GlobalKey<_i3.NavigatorState>? navigatorKey])
@@ -30,6 +31,11 @@ class AppRouter extends _i2.RootStackRouter {
             description: args.description,
           ));
     },
+    SignUpRoute.name: (routeData) {
+      return _i2.MaterialPageX<dynamic>(
+          routeData: routeData,
+          child: _i6.RegisterPage()); // Add SignUpPage route
+    },
   };
 
   @override
@@ -37,6 +43,7 @@ class AppRouter extends _i2.RootStackRouter {
         _i2.RouteConfig(AuthRoute.name, path: '/'),
         _i2.RouteConfig(HomeRoute.name, path: '/admin-home'),
         _i2.RouteConfig(UpgradeProjectRoute.name, path: '/upgrade-project'), // Add route
+        _i2.RouteConfig(SignUpRoute.name, path: '/sign-up')
       ];
 }
 
@@ -72,6 +79,13 @@ class UpgradeProjectRoute extends _i2.PageRouteInfo<UpgradeProjectRouteArgs> {
         );
 
   static const String name = 'UpgradeProjectRoute';
+}
+
+/// [_i6.SignUpPage]
+class SignUpRoute extends _i2.PageRouteInfo<void> {
+  const SignUpRoute() : super(SignUpRoute.name, path: '/sign-up');
+
+  static const String name = 'SignUpRoute';
 }
 
 class UpgradeProjectRouteArgs {

@@ -16,6 +16,8 @@ import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:nimbus/values/values.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:nimbus/api/create_project.dart'; 
+import 'package:nimbus/api/file_picker_helper.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -48,6 +50,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Uint8List? webImage;
   File? _imageFile;
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -83,6 +87,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _controller.dispose();
     _scrollController.dispose();
     _projectController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -95,28 +101,53 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> _pickImage() async {
-    try {
-      final picker = ImagePicker();
-      if (kIsWeb) {
-        final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-        if (pickedFile != null) {
-          final bytes = await pickedFile.readAsBytes();
-          setState(() {
-            webImage = bytes;
-          });
-        }
-      } else {
-        final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-        if (pickedFile != null) {
-          setState(() {
-            _imageFile = File(pickedFile.path);
-          });
-        }
-      }
-    } catch (e) {
-      print("Image picker error: $e");
-    }
+  final pickedFile = await pickFile();
+  if (pickedFile != null) {
+    setState(() {
+      webImage = pickedFile.bytes;
+      _imageFile = File(pickedFile.name); // Only for the purpose of displaying the image in mobile
+    });
   }
+}
+
+Future<void> _createProject() async {
+  if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please fill all the fields')),
+    );
+    return;
+  }
+
+  final project = CreateProjectRequest(
+    name: _titleController.text,
+    description: _descriptionController.text,
+    year: DateTime.now().year,
+  );
+
+  List<CustomPickedFile> pictures = [];
+  if (webImage != null) {
+    pictures.add(CustomPickedFile(bytes: webImage!, name: 'image.png'));
+  }
+
+  bool success = await createProject(project, pictures);
+
+  if (success) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Project created successfully')),
+    );
+    // Clear the form
+    setState(() {
+      _titleController.clear();
+      _descriptionController.clear();
+      _imageFile = null;
+      webImage = null;
+    });
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to create project')),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -278,6 +309,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
             SpaceH20(),
             TextField(
+              controller: _titleController,
               decoration: InputDecoration(
                 labelText: 'Project Title',
                 border: OutlineInputBorder(
@@ -286,9 +318,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ),
             SpaceH20(),
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(
+                labelText: 'Project Description',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SpaceH20(),
             NimbusButton(
               buttonTitle: "Add Project",
-              onPressed: () {},
+              onPressed: _createProject,
             ),
           ],
         ),

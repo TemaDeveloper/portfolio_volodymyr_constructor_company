@@ -1,7 +1,9 @@
 import 'dart:convert';
-import 'dart:html'; // For FileUploadInputElement
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/api/file_picker_helper.dart'; // CustomPickedFile is defined here
 
 class GeoData {
   final String country;
@@ -42,31 +44,27 @@ class CreateProjectRequest {
       };
 }
 
-Future<bool> createProject(CreateProjectRequest project, List<File> pictures) async {
+Future<bool> createProject(CreateProjectRequest project, List<CustomPickedFile> pictures) async {
   final url = "$baseUrl/api/projects";
 
-  // Convert project to JSON
-  String projectJson = json.encode(project.toJson());
+  // Create multipart request
+  final request = http.MultipartRequest('POST', Uri.parse(url));
 
-  // Create a FormData object
-  FormData formData = FormData();
+  // Add JSON data as a field
+  request.fields['json'] = json.encode(project.toJson());
 
-  // Add JSON data
-  formData.append('json', projectJson);
-
-  // Add pictures
-  for (int i = 0; i < pictures.length; i++) {
-    formData.appendBlob('pictures', pictures[i], pictures[i].name);
+  // Add pictures as files
+  for (CustomPickedFile picture in pictures) {
+    request.files.add(http.MultipartFile.fromBytes(
+      'pictures',
+      picture.bytes,
+      filename: picture.name,
+      contentType: MediaType('image', 'jpeg'),
+    ));
   }
 
-  // Perform the POST request
-  final response = await http.post(
-    Uri.parse(url),
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    body: formData,
-  );
+  // Send the request
+  final response = await request.send();
 
   // Check the status code
   if (response.statusCode == 200) {

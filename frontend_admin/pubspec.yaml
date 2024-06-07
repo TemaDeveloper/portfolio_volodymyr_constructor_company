@@ -29,6 +29,7 @@ dependencies:
   gap: ^3.0.1  
   image_picker: ^1.1.2
   http: ^1.2.1
+  crypt: ^4.3.1
 
 dev_dependencies:
   flutter_test:

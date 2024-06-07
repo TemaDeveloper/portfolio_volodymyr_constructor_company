@@ -38,8 +38,7 @@ pub async fn auth(
         .await;
 
     match count {
-        Err(e) => {
-            tracing::error!("Or here: {e}");
+        Err(_e) => {
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         },
         Ok(count) => {
@@ -49,7 +48,6 @@ pub async fn auth(
             } else {
                 match issue_jwt() {
                     Err(_) => {
-                        tracing::error!("here");
                         StatusCode::INTERNAL_SERVER_ERROR.into_response()
                     },
                     Ok(token) => {

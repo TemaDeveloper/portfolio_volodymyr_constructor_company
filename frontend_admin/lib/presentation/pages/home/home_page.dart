@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
+import 'package:nimbus/presentation/routes/router.gr.dart';
 import 'package:nimbus/presentation/widgets/app_drawer.dart';
 import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
 import 'package:nimbus/presentation/widgets/content_area.dart';
@@ -427,21 +429,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     List<Widget> items = [];
     for (int index = 0; index < data.length; index++) {
       items.add(
-        ScaleTransition(
-          scale: _projectScaleAnimation,
-          child: ProjectItem(
-            width: isMobile
-                ? assignWidth(context, data[index].mobileWidth)
-                : assignWidth(context, data[index].width),
-            height: isMobile
-                ? assignHeight(context, data[index].mobileHeight)
-                : assignHeight(context, data[index].height),
-            bannerHeight: isMobile
-                ? assignHeight(context, data[index].mobileHeight) / 2
-                : assignHeight(context, data[index].height) / 3,
+        GestureDetector(
+          onTap: () {
+          context.router.push(UpgradeProjectRoute(
             title: data[index].title,
-            subtitle: data[index].category,
-            imageUrl: data[index].projectCoverUrl,
+            description: data[index].category,
+            
+          ));
+        },
+          child: 
+          ScaleTransition(
+            scale: _projectScaleAnimation,
+            child: ProjectItem(
+              width: isMobile
+                  ? assignWidth(context, data[index].mobileWidth)
+                  : assignWidth(context, data[index].width),
+              height: isMobile
+                  ? assignHeight(context, data[index].mobileHeight)
+                  : assignHeight(context, data[index].height),
+              bannerHeight: isMobile
+                  ? assignHeight(context, data[index].mobileHeight) / 2
+                  : assignHeight(context, data[index].height) / 3,
+              title: data[index].title,
+              subtitle: data[index].category,
+              imageUrl: data[index].projectCoverUrl,
+            ),
           ),
         ),
       );

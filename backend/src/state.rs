@@ -55,9 +55,9 @@ impl AppState {
         Ok(s)
     }
 
-    pub async fn validate_visitor(&self, uuid: &Uuid) -> Result<bool, DbErr> {
+    pub async fn validate_visitor(&self, uuid: &str) -> Result<bool, DbErr> {
         let count = visitor::Entity::find()
-            .filter(visitor::Column::Uuid.eq(*uuid))
+            .filter(visitor::Column::Uuid.eq(uuid))
             .filter(visitor::Column::TimeOut.gte(chrono::Local::now().naive_local()))
             .count(&self.db_conn)
             .await?;

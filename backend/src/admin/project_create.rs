@@ -109,8 +109,6 @@ pub async fn create(
         }
     }
 
-    tracing::warn!("Number of file workers: {}", file_workers.len());
-
     let file_workers = join_all(file_workers).await;
 
     let mut file_info = Vec::with_capacity(file_workers.len());

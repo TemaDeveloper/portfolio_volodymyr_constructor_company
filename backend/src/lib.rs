@@ -33,13 +33,13 @@ pub async fn create_routes() -> anyhow::Result<Router> {
             .route("/auth", routing::post(admin::auth)) /* auth endpoint */
             .nest("/api", admin::api_router())) /* everything that needs verification */
 
-        // .nest("/visitor", Router::new()
-        //     .route("/:visitor_uuid", routing::get(visitor::page))
-        //     .nest("/api", visitor::visitor_api_router(state.clone())))
+        .nest("/visitor", Router::new()
+            .route("/:visitor_uuid", routing::get(visitor::page))
+            .nest("/api", visitor::api_router(state.clone())))
 
         .with_state(state)
         .layer(cors)
-        .layer(DefaultBodyLimit::max(100 * 1024 * 1024))
+        .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100mb
         .layer(RequestBodyLimitLayer::new(100 * 1024 * 1024))
     )
 

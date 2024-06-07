@@ -42,6 +42,7 @@ pub async fn is_admin(
         }
     } else {
         /* should not happen in release ever */
+        tracing::warn!("No bearer token, although debug mode");
         next.run(req).await
     }
 }

@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/api/list_projects.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
@@ -16,7 +18,7 @@ import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:nimbus/values/values.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import 'package:nimbus/api/create_project.dart'; 
+import 'package:nimbus/api/create_project.dart';
 import 'package:nimbus/api/file_picker_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -40,16 +42,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   late AnimationController _projectController;
   late Animation<double> _projectScaleAnimation;
-  List<List<ProjectData>> projects = [
-    Data.allProjects,
-    Data.branding,
-    Data.packaging,
-    Data.photograhy,
-    Data.webDesign,
-  ];
-  late List<ProjectData> recentlyAddedProjects;
+  List<Project> projects = [];
   List<String> years = [];
   bool isLoading = true;
+  int? selectedYear;
+
+  final List<String> timeIntervals = [
+    '1 hour',
+    '2 hours',
+    '3 hours',
+    '5 hours',
+    '8 hours',
+    '24 hours',
+    '48 hours',
+  ];
+
+  double _currentSliderValue = 0;
 
   Uint8List? webImage;
   File? _imageFile;
@@ -61,7 +69,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    recentlyAddedProjects = projects[0];
 
     _projectController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -86,6 +93,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     });
 
     _fetchYears();
+    _fetchProjects();
   }
 
   @override
@@ -105,6 +113,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (fetchedYears != null) {
       setState(() {
         years = fetchedYears;
+        isLoading = false;
+      });
+    } else {
+      // Handle error
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchProjects({int? year}) async {
+    setState(() {
+      isLoading = true;
+    });
+    List<Project>? fetchedProjects = await getProjects(year: year);
+    if (fetchedProjects != null) {
+      setState(() {
+        projects = fetchedProjects;
         isLoading = false;
       });
     } else {
@@ -196,6 +222,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _imageFile = null;
         webImage = null;
       });
+      _fetchProjects();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to create project')),
@@ -265,6 +292,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         children: [
                           _buildAdminControls(),
                           SizedBox(height: spacerHeight),
+                          _buildSlider(context),
+                          SizedBox(height: spacerHeight),
                           _buildAddProjectSection(context),
                           SizedBox(height: spacerHeight),
                           _buildProjectsSection(context),
@@ -300,20 +329,44 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             fontSize: 16,
           ),
         ),
-        SpaceH20(),
-        ElevatedButton(
-          onPressed: () {
-            // Implement link generation logic here
-          },
-          child: Text('Generate Link'),
-        ),
+        SpaceW20(),
+            NimbusButton(
+              buttonTitle: "Generate Link",
+              onPressed: () {
+                // Generate link logic here
+              },
+            ),
       ],
     );
   }
 
+  Widget _buildSlider(BuildContext context){
+    return Column(
+      children: [
+        Slider(
+          value: _currentSliderValue,
+          min: 0,
+          max: (timeIntervals.length - 1).toDouble(),
+          divisions: timeIntervals.length - 1,
+          label: timeIntervals[_currentSliderValue.toInt()],
+          onChanged: (double value) {
+            setState(() {
+              _currentSliderValue = value;
+            });
+          },
+        ),
+        SizedBox(height: 16),
+        Text(
+          'Selected Time: ${timeIntervals[_currentSliderValue.toInt()]}',
+          style: TextStyle(fontSize: 18),
+        ),
+      ],
+    );
+  } 
+
+
   Widget _buildAddProjectSection(BuildContext context) {
     return Card(
-      elevation: 4.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
@@ -454,7 +507,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   Wrap(
                     runSpacing: assignHeight(context, 0.05),
                     children: _buildProjects(
-                      recentlyAddedProjects,
+                      projects,
                       isMobile: true,
                     ),
                   ),
@@ -495,7 +548,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: Wrap(
                     spacing: assignWidth(context, 0.025),
                     runSpacing: assignWidth(context, 0.025),
-                    children: _buildProjects(recentlyAddedProjects),
+                    children: _buildProjects(projects),
                   ),
                 ),
               ],
@@ -514,63 +567,54 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ProjectCategory(
           title: years[index],
           number: index + 1,
-          isSelected: false,
-          onTap: () => onProjectCategoryTap(index),
+          isSelected: selectedYear == int.parse(years[index]),
+          onTap: () => onProjectCategoryTap(int.parse(years[index])),
         ),
       );
     }
     return items;
   }
 
-  void onProjectCategoryTap(int index) {
-    _projectController.reset();
-    changeCategorySelected(index);
+  void onProjectCategoryTap(int year) {
     setState(() {
-      recentlyAddedProjects = projects[index];
-      _playProjectAnimation();
+      selectedYear = year;
+      _fetchProjects(year: year);
     });
   }
 
-  void changeCategorySelected(int selectedIndex) {
-    setState(() {
-      for (int index = 0; index < years.length; index++) {
-        // Ensure the selection logic works based on your specific requirements
-      }
-    });
-  }
-
-  List<Widget> _buildProjects(List<ProjectData> data, {bool isMobile = false}) {
+  List<Widget> _buildProjects(List<Project> projects, {bool isMobile = false}) {
     List<Widget> items = [];
-    for (int index = 0; index < data.length; index++) {
+    for (int index = 0; index < projects.length; index++) {
       items.add(
         GestureDetector(
           onTap: () {
             context.router.push(UpgradeProjectRoute(
-              title: data[index].title,
-              description: data[index].category,
+              title: projects[index].name,
+              description: projects[index].description,
             ));
           },
           child: ScaleTransition(
             scale: _projectScaleAnimation,
             child: ProjectItem(
               width: isMobile
-                  ? assignWidth(context, data[index].mobileWidth)
-                  : assignWidth(context, data[index].width),
+                  ? assignWidth(context, 300)
+                  : assignWidth(context, 400),
               height: isMobile
-                  ? assignHeight(context, data[index].mobileHeight)
-                  : assignHeight(context, data[index].height),
+                  ? assignHeight(context, 300)
+                  : assignHeight(context, 400),
               bannerHeight: isMobile
-                  ? assignHeight(context, data[index].mobileHeight) / 2
-                  : assignHeight(context, data[index].height) / 3,
-              title: data[index].title,
-              subtitle: data[index].category,
-              imageUrl: data[index].projectCoverUrl,
+                  ? assignHeight(context, 150)
+                  : assignHeight(context, 200),
+              title: projects[index].name,
+              subtitle: projects[index].country,
+              imageUrl: projects[index].pictures.isNotEmpty
+                  ? '$baseUrl/api/storage/${projects[index].pictures[0]}'
+                  : 'assets/images/placeholder.png',
             ),
           ),
         ),
       );
     }
-
     return items;
   }
 
@@ -603,11 +647,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 }
 
 Future<List<String>?> getYears() async {
-  final response = await http.get(Uri.parse('$baseUrl/years'));
+  final response = await http.get(Uri.parse('$baseUrl/api/years'));
 
   if (response.statusCode == 200) {
     Map<String, dynamic> jsonResponse = json.decode(response.body);
-    return List<String>.from(jsonResponse['years']);
+    List<int> intYears = List<int>.from(jsonResponse['years']);
+    List<String> stringYears = intYears.map((year) => year.toString()).toList();
+    return stringYears;
   } else {
     return null;
   }

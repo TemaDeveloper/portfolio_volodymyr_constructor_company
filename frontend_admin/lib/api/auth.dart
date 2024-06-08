@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
@@ -65,20 +64,23 @@ Future<RegisterStatus> registerAdmin(
 
 
 /// Theoretically there is no point of failure
-Future<String> issueVisitorLink({
-  required Uint64 validFor
-}) async {
-  final resp = await http.post(
-    Uri.parse("$baseUrl/api/register-admin"),
+Future<String> issueVisitorLink({required int validFor}) async {
+  final url = "$baseUrl/api/register-admin";
+  final response = await http.post(
+    Uri.parse(url),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, Uint64>{
-      "valid_for_sec": validFor,
+    body: jsonEncode(<String, dynamic>{
+      "valid_for_sec": validFor.toString(), // Convert to string to simulate Uint64
     }),
   );
 
-  final uuid = json.decode(resp.body)["uuid"];
-
-  return "$baseBaseUrl/visitor/$uuid";
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.body);
+    final uuid = jsonResponse["uuid"];
+    return "$baseUrl/visitor/$uuid";
+  } else {
+    throw Exception('Failed to generate link. Status code: ${response.statusCode}, Body: ${response.body}');
+  }
 }

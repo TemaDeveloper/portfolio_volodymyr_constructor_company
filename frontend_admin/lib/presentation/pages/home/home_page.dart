@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nimbus/api/auth.dart';
 import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/api/list_projects.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
@@ -141,17 +143,69 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
+  Future<void> _generateLink() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    int validFor;
+    switch (_currentSliderValue.toInt()) {
+      case 0:
+        validFor = 1 * 3600;
+        break;
+      case 1:
+        validFor = 2 * 3600;
+        break;
+      case 2:
+        validFor = 3 * 3600;
+        break;
+      case 3:
+        validFor = 5 * 3600;
+        break;
+      case 4:
+        validFor = 8 * 3600;
+        break;
+      case 5:
+        validFor = 24 * 3600;
+        break;
+      case 6:
+        validFor = 48 * 3600;
+        break;
+      default:
+        validFor = 1 * 3600;
+    }
+
+    try {
+      String link = await issueVisitorLink(validFor: validFor);
+      await Clipboard.setData(ClipboardData(text: link));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Link copied to clipboard: $link')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to generate link: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
   Future<void> _pickImage() async {
     final pickedFile = await pickFile();
     if (pickedFile != null) {
       setState(() {
         webImage = pickedFile.bytes;
-        _imageFile = File(pickedFile.name); // Only for the purpose of displaying the image in mobile
+        _imageFile = File(pickedFile
+            .name); // Only for the purpose of displaying the image in mobile
       });
     }
   }
 
-  Future<bool> _createProject(CreateProjectRequest project, List<CustomPickedFile> pictures) async {
+  Future<bool> _createProject(
+      CreateProjectRequest project, List<CustomPickedFile> pictures) async {
     final url = "$baseUrl/api/projects";
 
     // Create multipart request
@@ -199,7 +253,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       name: _titleController.text,
       description: _descriptionController.text,
       year: int.parse(_yearController.text),
-      geoData: GeoData(country: _countryController.text, latitude: 0, longitude: 0),
+      geoData:
+          GeoData(country: _countryController.text, latitude: 0, longitude: 0),
     );
 
     List<CustomPickedFile> pictures = [];
@@ -292,8 +347,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         children: [
                           _buildAdminControls(),
                           SizedBox(height: spacerHeight),
-                          _buildSlider(context),
-                          SizedBox(height: spacerHeight),
                           _buildAddProjectSection(context),
                           SizedBox(height: spacerHeight),
                           _buildProjectsSection(context),
@@ -329,41 +382,37 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             fontSize: 16,
           ),
         ),
-        SpaceW20(),
-            NimbusButton(
-              buttonTitle: "Generate Link",
-              onPressed: () {
-                // Generate link logic here
+        
+        Column(
+          children: [
+            Slider(
+              value: _currentSliderValue,
+              min: 0,
+              max: (timeIntervals.length - 1).toDouble(),
+              divisions: timeIntervals.length - 1,
+              label: timeIntervals[_currentSliderValue.toInt()],
+              onChanged: (double value) {
+                setState(() {
+                  _currentSliderValue = value;
+                });
               },
             ),
+            SizedBox(height: 16),
+            Text(
+              'Selected Time: ${timeIntervals[_currentSliderValue.toInt()]}',
+              style: TextStyle(fontSize: 18),
+            ),
+            SpaceW20(),
+        NimbusButton(
+          buttonTitle: "Generate Link",
+          onPressed: _generateLink,
+          
+        ),
+          ],
+        )
       ],
     );
   }
-
-  Widget _buildSlider(BuildContext context){
-    return Column(
-      children: [
-        Slider(
-          value: _currentSliderValue,
-          min: 0,
-          max: (timeIntervals.length - 1).toDouble(),
-          divisions: timeIntervals.length - 1,
-          label: timeIntervals[_currentSliderValue.toInt()],
-          onChanged: (double value) {
-            setState(() {
-              _currentSliderValue = value;
-            });
-          },
-        ),
-        SizedBox(height: 16),
-        Text(
-          'Selected Time: ${timeIntervals[_currentSliderValue.toInt()]}',
-          style: TextStyle(fontSize: 18),
-        ),
-      ],
-    );
-  } 
-
 
   Widget _buildAddProjectSection(BuildContext context) {
     return Card(
@@ -491,7 +540,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           double screenWidth = sizingInformation.screenSize.width;
           if (screenWidth < (RefinedBreakpoints().tabletLarge)) {
             return Container(
-              padding: EdgeInsets.symmetric(horizontal: getSidePadding(context)),
+              padding:
+                  EdgeInsets.symmetric(horizontal: getSidePadding(context)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -518,7 +568,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             return Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: getSidePadding(context)),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: getSidePadding(context)),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,

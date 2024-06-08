@@ -65,14 +65,14 @@ Future<RegisterStatus> registerAdmin(
 
 /// Theoretically there is no point of failure
 Future<String> issueVisitorLink({required int validFor}) async {
-  final url = "$baseUrl/api/register-admin";
+  final url = "$baseUrl/api/visitor";
   final response = await http.post(
     Uri.parse(url),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, dynamic>{
-      "valid_for_sec": validFor.toString(), // Convert to string to simulate Uint64
+    body: jsonEncode(<String, int>{
+      "valid_for_sec": validFor, // Convert to string to simulate Uint64
     }),
   );
 

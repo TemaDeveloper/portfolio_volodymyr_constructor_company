@@ -177,6 +177,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     try {
       String link = await issueVisitorLink(validFor: validFor);
+      print(link);
       await Clipboard.setData(ClipboardData(text: link));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Link copied to clipboard: $link')),

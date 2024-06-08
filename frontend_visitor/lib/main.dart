@@ -1,11 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
 import 'package:nimbus/values/values.dart';
+import 'package:http/http.dart' as http;
+import 'dart:html' as html;
 
 import 'app_theme.dart';
 
-void main() {
+void main() async {
+  // just to get a cookie
+  if (kDebugMode && kIsWeb) {
+    final uuid = "cdd3e2b3-5ea9-46bf-a0f8-ef7530d28dcf";
+    final resp = await http.get(
+      Uri.parse("http://127.0.0.1:8000/visitor/$uuid")
+    );
+    assert(resp.statusCode == 200);
+    html.document.cookie = "visitor-uuid=$uuid;";
+  }
   runApp(PortfolioBuilder());
 }
 

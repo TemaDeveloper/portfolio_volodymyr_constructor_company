@@ -1,5 +1,4 @@
 use axum::{extract::DefaultBodyLimit, routing, Router};
-use reqwest::Method;
 use state::AppState;
 use tower_http::{cors::{self, CorsLayer}, limit::RequestBodyLimitLayer};
 
@@ -22,10 +21,8 @@ pub fn bytes_to_img_format(bytes: &[u8]) -> Option<&'static str> {
 
 pub async fn create_routes() -> anyhow::Result<Router> {
     let state = AppState::init().await?;
-
     let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
-        .allow_origin(cors::Any);
+        .allow_origin(cors::AllowOrigin::any());
 
     Ok(Router::new()
         .nest("/admin", Router::new()

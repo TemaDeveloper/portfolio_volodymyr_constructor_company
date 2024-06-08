@@ -21,8 +21,6 @@ pub fn bytes_to_img_format(bytes: &[u8]) -> Option<&'static str> {
 
 pub async fn create_routes() -> anyhow::Result<Router> {
     let state = AppState::init().await?;
-    let cors = CorsLayer::new()
-        .allow_origin(cors::AllowOrigin::any());
 
     Ok(Router::new()
         .nest("/admin", Router::new()
@@ -35,7 +33,7 @@ pub async fn create_routes() -> anyhow::Result<Router> {
             .nest("/api", visitor::api_router(state.clone())))
 
         .with_state(state)
-        .layer(cors)
+        .layer(CorsLayer::permissive())
         .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100mb
         .layer(RequestBodyLimitLayer::new(100 * 1024 * 1024))
     )

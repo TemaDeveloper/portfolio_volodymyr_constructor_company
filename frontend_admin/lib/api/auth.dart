@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
@@ -60,4 +61,24 @@ Future<RegisterStatus> registerAdmin(
   } else {
     return RegisterStatus.InternalServerError;
   }
+}
+
+
+/// Theoretically there is no point of failure
+Future<String> issueVisitorLink({
+  required Uint64 validFor
+}) async {
+  final resp = await http.post(
+    Uri.parse("$baseUrl/api/register-admin"),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, Uint64>{
+      "valid_for_sec": validFor,
+    }),
+  );
+
+  final uuid = json.decode(resp.body)["uuid"];
+
+  return "$baseBaseUrl/visitor/$uuid";
 }

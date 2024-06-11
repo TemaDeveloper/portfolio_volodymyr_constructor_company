@@ -10,14 +10,14 @@ import 'app_theme.dart';
 
 void main() async {
   // just to get a cookie
-  if (kDebugMode && kIsWeb) {
-    final uuid = "cdd3e2b3-5ea9-46bf-a0f8-ef7530d28dcf";
-    final resp = await http.get(
-      Uri.parse("http://127.0.0.1:8000/visitor/$uuid")
-    );
-    assert(resp.statusCode == 200);
-    html.document.cookie = "visitor-uuid=$uuid;";
-  }
+  // if (kDebugMode && kIsWeb) {
+  //   final uuid = "1384efd7-20d7-4042-8697-30ac3b87a5db";
+  //   final resp = await http.get(
+  //     Uri.parse("http://127.0.0.1:8000/visitor/$uuid")
+  //   );
+  //   assert(resp.statusCode == 200);
+  //   html.document.cookie = "visitor-uuid=$uuid;";
+  // }
   runApp(PortfolioBuilder());
 }
 

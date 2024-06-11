@@ -65,6 +65,14 @@ class Data {
     ),
   ];
 
+   static List<ProjectCategoryData> projectCategories = [
+    ProjectCategoryData(title: StringConst.ALL, number: 6, isSelected: true),
+    ProjectCategoryData(title: StringConst.BRANDING, number: 1),
+    ProjectCategoryData(title: StringConst.PACKAGING, number: 1),
+    ProjectCategoryData(title: StringConst.YEAR, number: 2),
+    ProjectCategoryData(title: StringConst.WEB_DESIGN, number: 3),
+  ];
+
   static List<SkillCardData> skillCardData = [
     SkillCardData(
       title: StringConst.SKILLS_1,
@@ -102,13 +110,6 @@ class Data {
     StatItemData(value: 22, subtitle: StringConst.YEARS_OF_EXPERIENCE),
   ];
 
-  static List<ProjectCategoryData> projectCategories = [
-    ProjectCategoryData(title: StringConst.ALL, number: 6, isSelected: true),
-    ProjectCategoryData(title: StringConst.BRANDING, number: 1),
-    ProjectCategoryData(title: StringConst.PACKAGING, number: 1),
-    ProjectCategoryData(title: StringConst.YEAR, number: 2),
-    ProjectCategoryData(title: StringConst.WEB_DESIGN, number: 3),
-  ];
 
   // static List<String> awards1 = [
   //   StringConst.AWARDS_1,

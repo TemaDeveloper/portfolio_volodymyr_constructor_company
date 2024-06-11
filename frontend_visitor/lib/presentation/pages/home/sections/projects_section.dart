@@ -1,17 +1,18 @@
-import 'package:auto_route/auto_route.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/api/list_projects.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
-import 'package:nimbus/presentation/pages/projects/projects_page.dart';
-import 'package:nimbus/presentation/routes/router.gr.dart';
-import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
 import 'package:nimbus/presentation/widgets/content_area.dart';
 import 'package:nimbus/presentation/widgets/nimbus_info_section.dart';
 import 'package:nimbus/presentation/widgets/project_item.dart';
 import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:nimbus/values/values.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+
+//Working Frontend
 
 const double kSpacing = 20.0;
 const double kRunSpacing = 16.0;
@@ -48,6 +49,10 @@ class _ProjectsSectionState extends State<ProjectsSection>
   ];
   late List<ProjectData> selectedProject;
   late List<ProjectCategoryData> projectCategories;
+  
+  List<String> years = [];
+  bool isLoading = true;
+  int? selectedYear;
 
   @override
   void initState() {
@@ -401,5 +406,18 @@ class _ProjectCategoryState extends State<ProjectCategory>
     } else {
       return widget.titleColor;
     }
+  }
+}
+
+Future<List<String>?> getYears() async {
+  final response = await http.get(Uri.parse('$baseUrl/api/years'));
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> jsonResponse = json.decode(response.body);
+    List<int> intYears = List<int>.from(jsonResponse['years']);
+    List<String> stringYears = intYears.map((year) => year.toString()).toList();
+    return stringYears;
+  } else {
+    return null;
   }
 }

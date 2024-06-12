@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nimbus/api/auth.dart';
 import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/api/list_projects.dart';
@@ -67,6 +68,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _yearController = TextEditingController();
   TextEditingController _countryController = TextEditingController();
+  List<XFile> _mediaFiles = [];
 
   @override
   void initState() {
@@ -193,20 +195,63 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
+  Future<void> _pickMedia() async {
+    final ImagePicker _picker = ImagePicker();
+    final List<XFile>? pickedImages = await _picker.pickMultiImage();
+    final XFile? pickedVideo = await _picker.pickVideo(source: ImageSource.gallery);
 
-  Future<void> _pickImage() async {
-    final pickedFile = await pickFile();
-    if (pickedFile != null) {
+    if (pickedImages != null) {
       setState(() {
-        webImage = pickedFile.bytes;
-        _imageFile = File(pickedFile
-            .name); // Only for the purpose of displaying the image in mobile
+        _mediaFiles.addAll(pickedImages);
+      });
+    }
+
+    if (pickedVideo != null) {
+      setState(() {
+        _mediaFiles.add(pickedVideo);
       });
     }
   }
 
+  void _showMediaPickerOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.image),
+            title: Text('Pick Images'),
+            onTap: () async {
+              Navigator.pop(context);
+              final List<XFile>? pickedFiles = await ImagePicker().pickMultiImage();
+              if (pickedFiles != null) {
+                setState(() {
+                  _mediaFiles.addAll(pickedFiles);
+                });
+              }
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.video_library),
+            title: Text('Pick Video'),
+            onTap: () async {
+              Navigator.pop(context);
+              final XFile? pickedVideo = await ImagePicker().pickVideo(source: ImageSource.gallery);
+              if (pickedVideo != null) {
+                setState(() {
+                  _mediaFiles.add(pickedVideo);
+                });
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<bool> _createProject(
-      CreateProjectRequest project, List<CustomPickedFile> pictures) async {
+      CreateProjectRequest project, List<XFile> mediaFiles) async {
     final url = "$baseUrl/api/projects";
 
     // Create multipart request
@@ -215,13 +260,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // Add JSON data as a field
     request.fields['json'] = json.encode(project.toJson());
 
-    // Add pictures as files
-    for (CustomPickedFile picture in pictures) {
+    // Add media files as files
+    for (XFile media in mediaFiles) {
+      final String mimeType = media.mimeType ?? 'application/octet-stream';
       request.files.add(http.MultipartFile.fromBytes(
-        'pictures',
-        picture.bytes,
-        filename: picture.name,
-        contentType: MediaType('image', 'jpeg'),
+        'media',
+        await media.readAsBytes(),
+        filename: media.name,
+        contentType: MediaType.parse(mimeType),
       ));
     }
 
@@ -254,16 +300,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       name: _titleController.text,
       description: _descriptionController.text,
       year: int.parse(_yearController.text),
-      geoData:
-          GeoData(country: _countryController.text, latitude: 0, longitude: 0),
+      geoData: GeoData(country: _countryController.text, latitude: 0, longitude: 0),
     );
 
-    List<CustomPickedFile> pictures = [];
-    if (webImage != null) {
-      pictures.add(CustomPickedFile(bytes: webImage!, name: 'image.png'));
-    }
-
-    bool success = await _createProject(project, pictures);
+    bool success = await _createProject(project, _mediaFiles);
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -275,8 +315,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _descriptionController.clear();
         _yearController.clear();
         _countryController.clear();
-        _imageFile = null;
-        webImage = null;
+        _mediaFiles.clear();
       });
       _fetchProjects();
     } else {
@@ -433,8 +472,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ),
             SpaceH20(),
-            GestureDetector(
-              onTap: _pickImage,
+            InkWell(
+              onTap: () => _showMediaPickerOptions(context),
               child: Container(
                 width: isMobile(context)
                     ? assignWidth(context, 0.9)
@@ -451,27 +490,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(15.0),
                 ),
                 child: Center(
-                  child: webImage != null
-                      ? Image.memory(webImage!)
-                      : _imageFile != null
-                          ? Image.file(_imageFile!)
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.image,
-                                  size: 50,
-                                  color: Colors.grey,
-                                ),
-                                Text(
-                                  "Tap to add image",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ],
-                            ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_a_photo,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                      Text(
+                        "Tap to add media",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+            SpaceH20(),
+            if (_mediaFiles.isNotEmpty) _buildSelectedMedia(),
             SpaceH20(),
             TextField(
               controller: _titleController,
@@ -520,6 +557,63 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSelectedMedia() {
+    return Column(
+      children: _mediaFiles.map((media) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            children: [
+              if (media.mimeType?.startsWith('image/') ?? false)
+                if (kIsWeb)
+                  Image.network(
+                    media.path,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  )
+                else
+                  Image.file(
+                    File(media.path),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  )
+              else if (media.mimeType?.startsWith('video/') ?? false)
+                Container(
+                  width: 100,
+                  height: 100,
+                  child: Icon(Icons.videocam, size: 50),
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  media.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  setState(() {
+                    _mediaFiles.remove(media);
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 

@@ -34,7 +34,7 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
-  List<XFile> _images = [];
+  List<XFile> _mediaFiles = [];
 
   @override
   void initState() {
@@ -45,18 +45,65 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
     _locationController.text = widget.country;
   }
 
-  // Future<void> _pickImages() async {
-  //   final ImagePicker _picker = ImagePicker();
-  //   final List<XFile>? pickedFiles = await _picker.pickMultiImage();
-  //   if (pickedFiles != null) {
-  //     setState(() {
-  //       _images.addAll(pickedFiles);
-  //     });
-  //   }
-  // }
+  Future<void> _pickMedia(ImageSource source) async {
+    final ImagePicker _picker = ImagePicker();
+    final List<XFile>? pickedFiles = await _picker.pickMultiImage();
+    final XFile? pickedVideo = await _picker.pickVideo(source: source);
+
+    if (pickedFiles != null) {
+      setState(() {
+        _mediaFiles.addAll(pickedFiles);
+      });
+    }
+
+    if (pickedVideo != null) {
+      setState(() {
+        _mediaFiles.add(pickedVideo);
+      });
+    }
+  }
 
   bool isMobile(BuildContext context) {
     return MediaQuery.of(context).size.width < RefinedBreakpoints().tabletLarge;
+  }
+
+  void _showMediaPickerOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.image),
+            title: Text('Pick Images'),
+            onTap: () async {
+              Navigator.pop(context);
+              final ImagePicker _picker = ImagePicker();
+              final List<XFile>? pickedFiles = await _picker.pickMultiImage();
+              if (pickedFiles != null) {
+                setState(() {
+                  _mediaFiles.addAll(pickedFiles);
+                });
+              }
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.video_library),
+            title: Text('Pick Video'),
+            onTap: () async {
+              Navigator.pop(context);
+              final ImagePicker _picker = ImagePicker();
+              final XFile? pickedVideo = await _picker.pickVideo(source: ImageSource.gallery);
+              if (pickedVideo != null) {
+                setState(() {
+                  _mediaFiles.add(pickedVideo);
+                });
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -90,10 +137,10 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
                 _buildTextField(_locationController, 'Location'),
                 SpaceH20(),
                 _buildTextField(_yearController, 'Year'),
-                //SpaceH20(),
-                //_buildImagePlaceholder(context),
                 SpaceH20(),
-                if (_images.isNotEmpty) _buildSelectedImages(),
+                _buildImagePlaceholder(context),
+                SpaceH20(),
+                if (_mediaFiles.isNotEmpty) _buildSelectedMedia(),
                 SpaceH20(),
                 Row(
                   children: [
@@ -101,12 +148,14 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
                       buttonTitle: 'Update',
                       onPressed: _updateProject,
                     ),
+                    SpaceW12(),
                     NimbusButton(
                       buttonTitle: 'Delete',
                       onPressed: _deleteProject,
                     ),
                   ],
                 ),
+                SpaceH16()
               ],
             ),
           );
@@ -128,7 +177,7 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
   }
 
   void _updateProject() async {
-    final int projectId = widget.id; // Replace with the actual project ID
+    final int projectId = widget.id;
 
     final updateRequest = UpdateProjectRequest(
       name: _titleController.text.isNotEmpty ? _titleController.text : null,
@@ -140,86 +189,106 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
     final success = await updateProject(projectId, updateRequest);
 
     if (success) {
-      // Handle successful update (e.g., navigate back, show a message)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Project is updated successfully')),
+      );
       print('Project updated successfully');
     } else {
-      // Handle update failure (e.g., show an error message)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Project is not updated')),
+      );
       print('Failed to update project');
     }
   }
 
   void _deleteProject() async {
-
     final projectId = widget.id;
     final success = await deleteProject(projectId);
-    if(success){
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project is deleted successfully')),
       );
-    }else{
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project is not deleted')),
       );
     }
-
   }
 
+  Widget _buildImagePlaceholder(BuildContext context) {
+    return InkWell(
+      onTap: () => _showMediaPickerOptions(context),
+      child: Container(
+        width: isMobile(context) ? assignWidth(context, 0.9) : assignWidth(context, 0.9),
+        height: isMobile(context) ? assignHeight(context, 0.2) : assignHeight(context, 0.3),
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(
+            color: Colors.grey,
+            width: 2.0,
+          ),
+        ),
+        child: Center(
+          child: Icon(
+            Icons.add_a_photo,
+            size: 50,
+            color: Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
 
-  // Widget _buildImagePlaceholder(BuildContext context) {
-  //   return InkWell(
-  //     onTap: _pickImages,
-  //     child: Container(
-  //       width: isMobile(context) ? assignWidth(context, 0.9) : assignWidth(context, 0.5),
-  //       height: isMobile(context) ? assignHeight(context, 0.2) : assignHeight(context, 0.3),
-  //       decoration: BoxDecoration(
-  //         color: Colors.grey[300],
-  //         borderRadius: BorderRadius.circular(10.0),
-  //         border: Border.all(
-  //           color: Colors.grey,
-  //           width: 2.0,
-  //         ),
-  //       ),
-  //       child: Center(
-  //         child: Icon(
-  //           Icons.add_a_photo,
-  //           size: 50,
-  //           color: Colors.grey,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  Widget _buildSelectedImages() {
+  Widget _buildSelectedMedia() {
     return Column(
-      children: _images.map((image) {
+      children: _mediaFiles.map((media) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
             children: [
-              if (kIsWeb)
-                Image.network(
-                  image.path,
+              if (media.mimeType?.startsWith('image/') ?? false)
+                if (kIsWeb)
+                  Image.network(
+                    media.path,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  )
+                else
+                  Image.file(
+                    File(media.path),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  )
+              else if (media.mimeType?.startsWith('video/') ?? false)
+                Container(
                   width: 100,
                   height: 100,
-                  fit: BoxFit.cover,
-                )
-              else
-                Image.file(
-                  File(image.path),
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
+                  child: Icon(Icons.videocam, size: 50),
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               SizedBox(width: 16),
               Expanded(
                 child: Text(
-                  image.name,
+                  media.name,
                   style: TextStyle(
                     fontSize: 16,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  setState(() {
+                    _mediaFiles.remove(media);
+                  });
+                },
               ),
             ],
           ),

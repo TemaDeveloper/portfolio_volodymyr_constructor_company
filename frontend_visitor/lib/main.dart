@@ -5,18 +5,21 @@ import 'package:nimbus/presentation/routes/router.gr.dart';
 import 'package:nimbus/values/values.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
-
+import 'package:dio/dio.dart';
 import 'app_theme.dart';
 
+
 void main() async {
-  // just to get a cookie
   // if (kDebugMode && kIsWeb) {
-  //   final uuid = "1384efd7-20d7-4042-8697-30ac3b87a5db";
-  //   final resp = await http.get(
-  //     Uri.parse("http://127.0.0.1:8000/visitor/$uuid")
-  //   );
-  //   assert(resp.statusCode == 200);
-  //   html.document.cookie = "visitor-uuid=$uuid;";
+  //   final uuid = "fb120ef3-7d19-4190-90fc-6d4b16cbfb86";
+  //   final dio = Dio();
+  //   try {
+  //     final resp = await dio.get("http://127.0.0.1:8000/visitor/$uuid");
+  //     assert(resp.statusCode == 200);
+  //     html.document.cookie = "visitor-uuid=$uuid;";
+  //   } on DioException catch (e) {
+  //     print("Failed to fetch visitor UUID: $e");
+  //   }
   // }
   runApp(PortfolioBuilder());
 }

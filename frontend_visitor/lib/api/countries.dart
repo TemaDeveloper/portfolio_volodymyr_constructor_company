@@ -1,5 +1,4 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:nimbus/api/constants.dart';
 
 class CountriesResponse {
@@ -15,22 +14,28 @@ class CountriesResponse {
 }
 
 Future<List<String>?> getCountries({int? year}) async {
-  String rootUrl = '${baseUrl}api/countries';
-  Map<String, String> queryParams = {};
+  try {
+    String rootUrl = '$baseUrl/api/countries';
+    Map<String, String> queryParams = {};
 
-  if (year != null) {
-    queryParams['year'] = year.toString();
+    if (year != null) {
+      queryParams['year'] = year.toString();
+    }
+
+    String queryString = Uri(queryParameters: queryParams).query;
+    String url = queryString.isNotEmpty ? '$rootUrl?$queryString' : rootUrl;
+
+    final response = await Dio().get(url);
+    if (response.statusCode == 200) {
+      // Directly use the response data as a JSON map
+      Map<String, dynamic> jsonResponse = response.data;
+      CountriesResponse countriesResponse = CountriesResponse.fromJson(jsonResponse);
+      return countriesResponse.countries;
+    } else {
+      print("Error fetching countries: ${response.statusCode}");
+    }
+  } on DioException catch (e) {
+    print("Dio error fetching countries: $e");
   }
-
-  String queryString = Uri(queryParameters: queryParams).query;
-  String url = queryString.isNotEmpty ? '$rootUrl?$queryString' : rootUrl;
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    Map<String, dynamic> jsonResponse = json.decode(response.body);
-    CountriesResponse countriesResponse = CountriesResponse.fromJson(jsonResponse);
-    return countriesResponse.countries;
-  } else {
-    return null;
-  }
+  return null;
 }

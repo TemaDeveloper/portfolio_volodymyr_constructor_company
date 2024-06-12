@@ -29,6 +29,9 @@ class AppRouter extends _i2.RootStackRouter {
           child: _i5.UpgradeProjectPage(
             title: args.title,
             description: args.description,
+            year: args.year,
+            country: args.country,
+            id: args.id,
           ));
     },
     SignUpRoute.name: (routeData) {
@@ -69,12 +72,18 @@ class UpgradeProjectRoute extends _i2.PageRouteInfo<UpgradeProjectRouteArgs> {
   UpgradeProjectRoute({
     required String title,
     required String description,
+    required String country,
+    required int id, 
+    required String year,
   }) : super(
           UpgradeProjectRoute.name,
           path: '/upgrade-project',
           args: UpgradeProjectRouteArgs(
             title: title,
             description: description,
+            year: year,
+            country: country,
+            id: id
           ),
         );
 
@@ -91,9 +100,15 @@ class SignUpRoute extends _i2.PageRouteInfo<void> {
 class UpgradeProjectRouteArgs {
   final String title;
   final String description;
+  final String year;
+  final int id;
+  final String country;
 
   UpgradeProjectRouteArgs({
     required this.title,
     required this.description,
+    required this.year,
+    required this.country,
+    required this.id,
   });
 }

@@ -4,7 +4,6 @@ import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:nimbus/values/values.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
-
 import 'animated_indicator.dart';
 
 class ProjectData {
@@ -116,7 +115,7 @@ class _ProjectItemState extends State<ProjectItem>
       child: Container(
         child: Stack(
           children: [
-            Image.asset(
+            Image.network(
               widget.imageUrl,
               width: widget.width,
               height: widget.height,

@@ -643,6 +643,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             context.router.push(UpgradeProjectRoute(
               title: projects[index].name,
               description: projects[index].description,
+              year: projects[index].year.toString(),
+              country: projects[index].country,
+              id: projects[index].id,
             ));
           },
           child: ScaleTransition(

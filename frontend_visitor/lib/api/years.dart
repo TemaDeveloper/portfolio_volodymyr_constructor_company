@@ -1,5 +1,5 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:nimbus/api/constants.dart';
 
 class Years {
@@ -15,14 +15,19 @@ class Years {
 }
 
 Future<List<String>?> getYears() async {
-  final response = await http.get(Uri.parse("$baseUrl/api/years"));
-
-  if (response.statusCode == 200) {
-    Map<String, dynamic> jsonResponse = json.decode(response.body);
-    Years yearsResponse = Years.fromJson(jsonResponse);
-    return yearsResponse.years;
-  } else {
-    return null;
+  try {
+    final response = await Dio().get('$baseUrl/api/years');
+    if (response.statusCode == 200) {
+      // Directly use the response data as a JSON map
+      Map<String, dynamic> jsonResponse = response.data;
+      List<int> intYears = List<int>.from(jsonResponse['years']);
+      List<String> stringYears = intYears.map((year) => year.toString()).toList();
+      return stringYears;
+    } else {
+      print("Error fetching years: ${response.statusCode}");
+    }
+  } on DioError catch (e) {
+    print("Dio error fetching years: $e");
   }
+  return null;
 }
-

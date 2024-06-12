@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
 import 'package:nimbus/presentation/widgets/content_area.dart';
@@ -7,6 +8,68 @@ import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:nimbus/values/values.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class Project {
+  final int year;
+  final String country;
+  final double latitude;
+  final double longitude;
+  final List<String> pictures;
+  final String description;
+  final int id;
+  final String name;
+
+  Project({
+    required this.year,
+    required this.country,
+    required this.latitude,
+    required this.longitude,
+    required this.pictures,
+    required this.description,
+    required this.id,
+    required this.name,
+  });
+
+  factory Project.fromJson(Map<String, dynamic> json) {
+    return Project(
+      year: json['year'],
+      country: json['country'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+      pictures: List<String>.from(json['pictures']),
+      description: json['description'],
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+}
+
+Future<List<Project>?> getProjects({String? country, int? year}) async {
+  Map<String, String> queryParams = {};
+  String url = "$baseUrl/api/projects";
+
+  if (country != null) {
+    queryParams['country'] = country;
+  }
+  if (year != null) {
+    queryParams['year'] = year.toString();
+  }
+
+  String queryString = Uri(queryParameters: queryParams).query;
+  url = queryString.isNotEmpty ? '$url?$queryString' : url;
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    List<dynamic> body = json.decode(response.body)["projects"];
+    List<Project> projects =
+        body.map((dynamic item) => Project.fromJson(item)).toList();
+    return projects;
+  } else {
+    return null;
+  }
+}
 
 class ProjectsPage extends StatefulWidget {
   final String title;
@@ -21,19 +84,12 @@ class ProjectsPage extends StatefulWidget {
 class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderStateMixin {
   late AnimationController _projectController;
   late Animation<double> _projectScaleAnimation;
-  late List<ProjectData> selectedProject;
-  List<List<ProjectData>> projects = [
-    Data.allProjects,
-    Data.branding,
-    Data.packaging,
-    Data.photograhy,
-    Data.webDesign,
-  ];
+  List<Project> projects = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    selectedProject = projects[0];
 
     _projectController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -49,13 +105,31 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
       ),
     );
 
-    _projectController.forward();
+    _fetchProjects();
   }
 
   @override
   void dispose() {
     _projectController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchProjects() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    List<Project>? fetchedProjects = await getProjects(year: int.parse(widget.title), country: widget.description);
+    if (fetchedProjects != null) {
+      setState(() {
+        projects = fetchedProjects;
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> _playProjectAnimation() async {
@@ -99,11 +173,13 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
                       children: [
                         _buildProjectDescription(),
                         SpaceH40(),
-                        Wrap(
-                          spacing: kSpacing,
-                          runSpacing: kRunSpacing,
-                          children: _buildProjects(selectedProject, isMobile: true),
-                        ),
+                        isLoading
+                          ? CircularProgressIndicator()
+                          : Wrap(
+                              spacing: kSpacing,
+                              runSpacing: kRunSpacing,
+                              children: _buildProjects(projects, isMobile: true),
+                            ),
                       ],
                     ),
                   ),
@@ -131,14 +207,16 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
                       ),
                     ),
                     SpaceH40(),
-                    Container(
-                      width: widthOfScreen(context),
-                      child: Wrap(
-                        spacing: assignWidth(context, 0.025),
-                        runSpacing: assignWidth(context, 0.025),
-                        children: _buildProjects(selectedProject),
-                      ),
-                    ),
+                    isLoading
+                      ? CircularProgressIndicator()
+                      : Container(
+                          width: widthOfScreen(context),
+                          child: Wrap(
+                            spacing: assignWidth(context, 0.025),
+                            runSpacing: assignWidth(context, 0.025),
+                            children: _buildProjects(projects),
+                          ),
+                        ),
                   ],
                 ),
               );
@@ -161,7 +239,7 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
     );
   }
 
-  List<Widget> _buildProjects(List<ProjectData> data, {bool isMobile = false}) {
+  List<Widget> _buildProjects(List<Project> data, {bool isMobile = false}) {
     List<Widget> items = [];
     for (int index = 0; index < data.length; index++) {
       items.add(
@@ -169,17 +247,17 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
           scale: _projectScaleAnimation,
           child: ProjectItem(
             width: isMobile
-                ? assignWidth(context, data[index].mobileWidth)
-                : assignWidth(context, data[index].width),
-            height: isMobile
-                ? assignHeight(context, data[index].mobileHeight)
-                : assignHeight(context, data[index].height),
+                ? assignWidth(context, 1.0)
+                : assignWidth(context, 0.25),
+            height: assignHeight(context, 0.2),
             bannerHeight: isMobile
-                ? assignHeight(context, data[index].mobileHeight) / 2
-                : assignHeight(context, data[index].height) / 3,
-            title: data[index].title,
-            subtitle: data[index].category,
-            imageUrl: data[index].projectCoverUrl,
+                ? assignHeight(context, 0.1)
+                : assignHeight(context, 0.1),
+            title: data[index].name,
+            subtitle: data[index].country,
+            imageUrl: data[index].pictures.isNotEmpty
+                ? '$baseUrl/api/storage/${data[index].pictures[0]}'
+                : 'assets/images/placeholder.png',
           ),
         ),
       );

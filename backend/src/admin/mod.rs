@@ -9,6 +9,7 @@ mod visitor;
 mod verify;
 mod project_create;
 mod project_update;
+mod project_delete;
 
 pub use auth::auth;
 
@@ -23,6 +24,7 @@ pub fn api_router() -> axum::Router<AppState> {
         .route("/visitor", routing::post(visitor::create))
         .route("/projects", routing::post(project_create::create))
         .route("/projects/:id", routing::patch(project_update::update))
+        .route("/projects/:id", routing::delete(project_delete::delete))
         .nest("/", common::get_router())
         .layer(middleware::from_fn(verify::is_admin))
 }

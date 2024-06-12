@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nimbus/api/delete.dart';
 import 'package:nimbus/api/update.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
@@ -94,9 +95,17 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
                 SpaceH20(),
                 if (_images.isNotEmpty) _buildSelectedImages(),
                 SpaceH20(),
-                NimbusButton(
-                  buttonTitle: 'Update',
-                  onPressed: _updateProject,
+                Row(
+                  children: [
+                    NimbusButton(
+                      buttonTitle: 'Update',
+                      onPressed: _updateProject,
+                    ),
+                    NimbusButton(
+                      buttonTitle: 'Delete',
+                      onPressed: _deleteProject,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -137,6 +146,22 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
       // Handle update failure (e.g., show an error message)
       print('Failed to update project');
     }
+  }
+
+  void _deleteProject() async {
+
+    final projectId = widget.id;
+    final success = await deleteProject(projectId);
+    if(success){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Project is deleted successfully')),
+      );
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Project is not deleted')),
+      );
+    }
+
   }
 
 

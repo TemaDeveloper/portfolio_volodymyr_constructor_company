@@ -12,6 +12,7 @@ import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/api/list_projects.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
+import 'package:nimbus/presentation/pages/home/sections/uploads.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
 import 'package:nimbus/presentation/widgets/app_drawer.dart';
 import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
@@ -195,23 +196,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
-  Future<void> _pickMedia() async {
-    final ImagePicker _picker = ImagePicker();
-    final List<XFile>? pickedImages = await _picker.pickMultiImage();
-    final XFile? pickedVideo = await _picker.pickVideo(source: ImageSource.gallery);
-
-    if (pickedImages != null) {
-      setState(() {
-        _mediaFiles.addAll(pickedImages);
-      });
-    }
-
-    if (pickedVideo != null) {
-      setState(() {
-        _mediaFiles.add(pickedVideo);
-      });
-    }
-  }
 
   void _showMediaPickerOptions(BuildContext context) {
     showModalBottomSheet(
@@ -615,6 +599,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         );
       }).toList(),
     );
+  }
+
+  //TODO: Add the functionality here 
+  Future<void> _uploadSelectedMedia() async {
+    bool imagesUploaded = await uploadImages(_mediaFiles);
+    bool videosUploaded = await uploadVideos(_mediaFiles);
+
+    if (imagesUploaded && videosUploaded) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Media uploaded successfully')));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload some media')));
+    }
   }
 
   Widget _buildProjectsSection(BuildContext context) {

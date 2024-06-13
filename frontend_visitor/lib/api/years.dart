@@ -16,7 +16,7 @@ class Years {
 
 Future<List<String>?> getYears() async {
   try {
-    final response = await Dio().get('$baseUrl/api/years');
+    final response = await Dio().get('$baseUrl/api/projects/years');
     if (response.statusCode == 200) {
       // Directly use the response data as a JSON map
       Map<String, dynamic> jsonResponse = response.data;

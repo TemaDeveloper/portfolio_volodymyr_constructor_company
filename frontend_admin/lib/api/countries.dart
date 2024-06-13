@@ -15,7 +15,7 @@ class CountriesResponse {
 }
 
 Future<List<String>?> getCountries({int? year}) async {
-  String rootUrl = '${baseUrl}api/countries';
+  String rootUrl = '${baseUrl}api/projects/countries';
   Map<String, String> queryParams = {};
 
   if (year != null) {

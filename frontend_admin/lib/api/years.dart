@@ -15,7 +15,7 @@ class Years {
 }
 
 Future<List<String>?> getYears() async {
-  final response = await http.get(Uri.parse(baseUrl));
+  final response = await http.get(Uri.parse("$baseUrl/api/projects/years"));
 
   if (response.statusCode == 200) {
     Map<String, dynamic> jsonResponse = json.decode(response.body);

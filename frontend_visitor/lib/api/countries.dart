@@ -15,7 +15,7 @@ class CountriesResponse {
 
 Future<List<String>?> getCountries({int? year}) async {
   try {
-    String rootUrl = '$baseUrl/api/countries';
+    String rootUrl = '$baseUrl/api/projects/countries';
     Map<String, String> queryParams = {};
 
     if (year != null) {
@@ -24,7 +24,6 @@ Future<List<String>?> getCountries({int? year}) async {
 
     String queryString = Uri(queryParameters: queryParams).query;
     String url = queryString.isNotEmpty ? '$rootUrl?$queryString' : rootUrl;
-
     final response = await Dio().get(url);
     if (response.statusCode == 200) {
       // Directly use the response data as a JSON map
@@ -34,7 +33,7 @@ Future<List<String>?> getCountries({int? year}) async {
     } else {
       print("Error fetching countries: ${response.statusCode}");
     }
-  } on DioException catch (e) {
+  } catch (e) {
     print("Dio error fetching countries: $e");
   }
   return null;

@@ -138,7 +138,7 @@ pub fn get_router() -> axum::Router<AppState> {
         .layer(middleware::from_fn(filter_file_ext));
 
     axum::Router::new()
-        .route("/projects", routing::get(list_projects))
+        .route("/", routing::get(list_projects))
         .route("/years", routing::get(list_years))
         .route("/countries", routing::get(list_countries))
         .nest("/storage", static_router)

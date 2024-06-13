@@ -53,8 +53,7 @@ async fn fetch_country_name(latitude: f64, longitude: f64) -> Result<String, req
         .to_string())
 }
 
-fn get_meta(file: Bytes) -> Result<(Option<NaiveDateTime>, Option<f64>, Option<f64>), PicInfoError> {
-    let metadata = Rexiv2Metadata::new_from_buffer(&file)?;
+fn get_meta(metadata: Rexiv2Metadata) ->(Option<NaiveDateTime>, Option<f64>, Option<f64>) {
 
     let date_time = metadata
         .get_tag_string("Exif.Photo.DateTimeOriginal")
@@ -85,7 +84,7 @@ fn get_meta(file: Bytes) -> Result<(Option<NaiveDateTime>, Option<f64>, Option<f
             )
         });
 
-    Ok((date_time, latitude, longitude))
+    (date_time, latitude, longitude)
 }
 
 impl GeoData {
@@ -110,10 +109,20 @@ impl GeoData {
 }
 
 impl PicInfo {
-    pub async fn from_bytes(file: Bytes) -> Result<Self, PicInfoError> {
+    pub async fn from_bytes(bytes: Bytes) -> Result<Self, PicInfoError> {
         // we use separate funciton as borrow checker is not happy when we create
         // Rexiv2Metadata in an async function
-        let (date_time, latitude, longitude) = get_meta(file)?;
+        let (date_time, latitude, longitude) = get_meta(Rexiv2Metadata::new_from_buffer(&bytes)?);
+        let geo_data = GeoData::from_latlong(latitude, longitude).await?;
+
+        Ok(Self {
+            date_time,
+            geo_data,
+        })
+    }
+
+    pub async fn from_file(file_name: &str) -> Result<Self, PicInfoError> {
+        let (date_time, latitude, longitude) = get_meta(Rexiv2Metadata::new_from_path(file_name)?);
         let geo_data = GeoData::from_latlong(latitude, longitude).await?;
 
         Ok(Self {

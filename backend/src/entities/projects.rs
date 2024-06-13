@@ -14,6 +14,7 @@ pub struct Model {
     #[sea_orm(column_type = "Double")]
     pub longitude: f64,
     pub pictures: Vec<String>,
+    pub videos: Vec<String>,
     #[sea_orm(column_type = "Text")]
     pub description: String,
     #[sea_orm(primary_key)]

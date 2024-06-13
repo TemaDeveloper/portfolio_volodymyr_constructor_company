@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(Projects::Country)
-                            .text() // should be enough for any countrie's name
+                            .text()
                             .not_null()
                     )
                     .col(
@@ -34,6 +34,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(Projects::Pictures)
+                            .not_null()
+                            .array(ColumnType::Text)
+                    )
+                    .col(
+                        ColumnDef::new(Projects::Videos)
                             .not_null()
                             .array(ColumnType::Text)
                     )
@@ -74,6 +79,7 @@ enum Projects {
     Name, 
     Description,
     Pictures,
+    Videos,
     Year,
     Country,
     Latitude,

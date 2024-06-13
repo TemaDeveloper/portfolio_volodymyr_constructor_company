@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nimbus/api/auth.dart';
 import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/api/list_projects.dart';
+import 'package:nimbus/api/upload.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
 import 'package:nimbus/presentation/pages/home/sections/uploads.dart';
@@ -234,80 +236,66 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Future<bool> _createProject(
-      CreateProjectRequest project, List<XFile> mediaFiles) async {
-    final url = "$baseUrl/api/projects";
+  Future<CustomPickedFile> convertXFileToCustomPickedFile(XFile file) async {
+  return CustomPickedFile(
+    name: file.name,
+    bytes: await file.readAsBytes(),
+  );
+}
 
-    // Create multipart request
-    final request = http.MultipartRequest('POST', Uri.parse(url));
-
-    // Add JSON data as a field
-    request.fields['json'] = json.encode(project.toJson());
-
-    // Add media files as files
-    for (XFile media in mediaFiles) {
-      final String mimeType = media.mimeType ?? 'application/octet-stream';
-      request.files.add(http.MultipartFile.fromBytes(
-        'media',
-        await media.readAsBytes(),
-        filename: media.name,
-        contentType: MediaType.parse(mimeType),
-      ));
-    }
-
-    // Send the request
-    try {
-      final response = await request.send();
-
-      // Check the status code
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        print('Failed to upload project: ${response.statusCode}');
-        return false;
-      }
-    } catch (e) {
-      print('Error uploading project: $e');
-      return false;
-    }
-  }
 
   Future<void> _addProject() async {
-    if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all the fields')),
-      );
-      return;
-    }
-
-    final project = CreateProjectRequest(
-      name: _titleController.text,
-      description: _descriptionController.text,
-      year: int.parse(_yearController.text),
-      geoData: GeoData(country: _countryController.text, latitude: 0, longitude: 0),
+  if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please fill all the fields')),
     );
+    return;
+  }
 
-    bool success = await _createProject(project, _mediaFiles);
+  final List<CustomPickedFile> pictures = [];
+  final List<CustomPickedFile> videos = [];
 
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Project created successfully')),
-      );
-      // Clear the form
-      setState(() {
-        _titleController.clear();
-        _descriptionController.clear();
-        _yearController.clear();
-        _countryController.clear();
-        _mediaFiles.clear();
-      });
-      _fetchProjects();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create project')),
-      );
+  for (XFile file in _mediaFiles) {
+    if (file.mimeType?.startsWith('image/') ?? false) {
+      pictures.add(await convertXFileToCustomPickedFile(file));
+    } else if (file.mimeType?.startsWith('video/') ?? false) {
+      videos.add(await convertXFileToCustomPickedFile(file));
     }
   }
+
+  final project = CreateProjectRequest(
+    name: _titleController.text,
+    description: _descriptionController.text,
+    year: int.tryParse(_yearController.text),
+    geoData: GeoData(
+      country: _countryController.text,
+      latitude: 0.0, // Replace with actual latitude
+      longitude: 0.0, // Replace with actual longitude
+    ),
+  );
+
+  ProjectResponse? response = await createProject(project, pictures, videos);
+
+  if (response != null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Project created successfully')),
+    );
+    // Clear the form
+    setState(() {
+      _titleController.clear();
+      _descriptionController.clear();
+      _yearController.clear();
+      _countryController.clear();
+      _mediaFiles.clear();
+    });
+    _fetchProjects();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to create project')),
+    );
+  }
+}
+
 
   Future<void> _playProjectAnimation() async {
     try {
@@ -439,179 +427,193 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildAddProjectSection(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+  return Card(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15.0),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Add New Project',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SpaceH20(),
+          InkWell(
+            onTap: () => _showMediaPickerOptions(context),
+            child: Container(
+              width: isMobile(context)
+                  ? assignWidth(context, 0.9)
+                  : assignWidth(context, 0.5),
+              height: isMobile(context)
+                  ? assignHeight(context, 0.2)
+                  : assignHeight(context, 0.3),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add_a_photo,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
+                    Text(
+                      "Tap to add media",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SpaceH20(),
+          if (_mediaFiles.isNotEmpty) _buildSelectedMedia(),
+          SpaceH20(),
+          TextField(
+            controller: _titleController,
+            decoration: InputDecoration(
+              labelText: 'Project Title',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          SpaceH20(),
+          TextField(
+            controller: _descriptionController,
+            decoration: InputDecoration(
+              labelText: 'Project Description',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          SpaceH20(),
+          TextField(
+            controller: _yearController,
+            decoration: InputDecoration(
+              labelText: 'Project Year',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          SpaceH20(),
+          TextField(
+            controller: _countryController,
+            decoration: InputDecoration(
+              labelText: 'Project Country',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          SpaceH20(),
+          NimbusButton(
+            buttonTitle: "Add Project",
+            onPressed: _addProject,
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    ),
+  );
+}
+
+Widget _buildSelectedMedia() {
+  return Column(
+    children: _mediaFiles.map((media) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
           children: [
-            Text(
-              'Add New Project',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SpaceH20(),
-            InkWell(
-              onTap: () => _showMediaPickerOptions(context),
-              child: Container(
-                width: isMobile(context)
-                    ? assignWidth(context, 0.9)
-                    : assignWidth(context, 0.5),
-                height: isMobile(context)
-                    ? assignHeight(context, 0.2)
-                    : assignHeight(context, 0.3),
+            if (media.mimeType?.startsWith('image/') ?? false)
+              if (kIsWeb)
+                Image.network(
+                  media.path,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                )
+              else
+                Image.file(
+                  File(media.path),
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                )
+            else if (media.mimeType?.startsWith('video/') ?? false)
+              Container(
+                width: 100,
+                height: 100,
+                child: Icon(Icons.videocam, size: 50),
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  border: Border.all(
-                    color: Colors.grey,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_a_photo,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
-                      Text(
-                        "Tap to add media",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
-                  ),
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-            ),
-            SpaceH20(),
-            if (_mediaFiles.isNotEmpty) _buildSelectedMedia(),
-            SpaceH20(),
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: 'Project Title',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+            SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                media.name,
+                style: TextStyle(
+                  fontSize: 16,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            SpaceH20(),
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: 'Project Description',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            SpaceH20(),
-            TextField(
-              controller: _yearController,
-              decoration: InputDecoration(
-                labelText: 'Project Year',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            SpaceH20(),
-            TextField(
-              controller: _countryController,
-              decoration: InputDecoration(
-                labelText: 'Project Country',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            SpaceH20(),
-            NimbusButton(
-              buttonTitle: "Add Project",
-              onPressed: _addProject,
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                setState(() {
+                  _mediaFiles.remove(media);
+                });
+              },
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }).toList(),
+  );
+}
 
-  Widget _buildSelectedMedia() {
-    return Column(
-      children: _mediaFiles.map((media) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            children: [
-              if (media.mimeType?.startsWith('image/') ?? false)
-                if (kIsWeb)
-                  Image.network(
-                    media.path,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  )
-                else
-                  Image.file(
-                    File(media.path),
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  )
-              else if (media.mimeType?.startsWith('video/') ?? false)
-                Container(
-                  width: 100,
-                  height: 100,
-                  child: Icon(Icons.videocam, size: 50),
-                  decoration: BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  media.name,
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  setState(() {
-                    _mediaFiles.remove(media);
-                  });
-                },
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
+Future<void> _uploadSelectedMedia() async {
+  final images = _mediaFiles
+      .where((file) => file.mimeType?.startsWith('image/') ?? false)
+      .map((file) => MultipartFile.fromFileSync(file.path, filename: file.name))
+      .toList();
 
-  //TODO: Add the functionality here 
-  Future<void> _uploadSelectedMedia() async {
-    bool imagesUploaded = await uploadImages(_mediaFiles);
-    bool videosUploaded = await uploadVideos(_mediaFiles);
+  final videos = _mediaFiles
+      .where((file) => file.mimeType?.startsWith('video/') ?? false)
+      .map((file) => MultipartFile.fromFileSync(file.path, filename: file.name))
+      .toList();
 
-    if (imagesUploaded && videosUploaded) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Media uploaded successfully')));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload some media')));
+  try {
+    if (images.isNotEmpty) {
+      await UploadClientApi().uploadPictures(images);
     }
+    if (videos.isNotEmpty) {
+      await UploadClientApi().uploadVideos(videos);
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Media uploaded successfully')));
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload some media')));
   }
+}
 
   Widget _buildProjectsSection(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;

@@ -15,9 +15,9 @@ pub async fn create_routes() -> anyhow::Result<Router> {
 
     Ok(Router::new()
         .nest("/admin", Router::new()
-            .route("/", routing::get(admin::page)) /* get actuall html for admin page */
-            .route("/auth", routing::post(admin::auth)) /* auth endpoint */
+            .nest("/", admin::page_router()) /* get actuall html for admin page */
             .nest("/api", admin::api_router())) /* everything that needs verification */
+            .route("/auth", routing::post(admin::auth)) /* auth endpoint */
 
         .nest("/visitor", Router::new()
             .route("/:visitor_uuid", routing::get(visitor::page))

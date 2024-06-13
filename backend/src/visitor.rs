@@ -2,7 +2,7 @@ use crate::{common, state::AppState};
 use axum::{
     body::Body,
     extract::{Path, State},
-    http::{Request, Response, StatusCode},
+    http::{Request, StatusCode},
     middleware::{self, Next},
     response::IntoResponse,
     Json,
@@ -61,7 +61,7 @@ pub async fn page(
 
 pub fn api_router(state: AppState) -> axum::Router<AppState> {
     axum::Router::new()
-        .nest("/", common::get_router())
+        .nest("/projects", common::get_router())
         .layer(middleware::from_fn_with_state(
             state,
             validate_visitor_cookie,

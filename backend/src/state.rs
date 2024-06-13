@@ -3,7 +3,6 @@ use lazy_static::lazy_static;
 use rand::{distributions::Alphanumeric, Rng};
 use sea_orm::{ColumnTrait, DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryFilter};
 use std::{env, time::Duration};
-use uuid::Uuid;
 
 lazy_static! {
     /// NOTE: regenerated after each server restart

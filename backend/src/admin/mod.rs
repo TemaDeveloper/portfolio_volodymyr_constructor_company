@@ -25,6 +25,11 @@ pub fn api_router() -> axum::Router<AppState> {
         .layer(middleware::from_fn(verify::is_admin))
 }
 
-pub async fn page() -> impl IntoResponse {
-    todo!("Return admin frontend(html)")
+async fn page() -> impl IntoResponse {
+    todo!()
+}
+
+pub fn page_router() -> axum::Router<AppState> {
+    axum::Router::new()
+        .route("/", routing::get(page))
 }

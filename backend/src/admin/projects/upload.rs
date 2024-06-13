@@ -18,9 +18,6 @@ pub enum UploadError {
     #[error("{0}")]
     MultipartError(#[from] MultipartError),
 
-    #[error("No field name supplied")]
-    NoFieldName,
-
     #[error("Unknown file extension")]
     UnknownExtension,
 

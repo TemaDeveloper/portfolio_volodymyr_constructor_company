@@ -34,7 +34,7 @@ where
 {
     for file_name in file_names {
         /* it is okay if try remove non existant file */
-        let _ = remove_file(&file_name).await;
+        let _ = remove_file(format!("storage/{file_name}")).await;
     }
 }
 

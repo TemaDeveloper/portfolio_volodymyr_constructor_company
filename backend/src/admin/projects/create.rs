@@ -1,3 +1,7 @@
+use super::{
+    pic_info::{GeoData, PicInfo, PicInfoError},
+    util,
+};
 use crate::{entities, state};
 use axum::{
     extract::State,
@@ -10,7 +14,6 @@ use entities::projects;
 use sea_orm::{ActiveModelTrait, DbErr};
 use serde::{Deserialize, Serialize};
 use state::AppState;
-use super::{pic_info::{GeoData, PicInfo, PicInfoError}, util};
 
 #[derive(thiserror::Error, Debug)]
 pub enum ProjectError {
@@ -45,7 +48,7 @@ pub struct ProjectResponse {
     year: i32,
     country: String,
     pictures: Vec<String>,
-    videos: Vec<String>
+    videos: Vec<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -68,7 +71,11 @@ pub async fn project(
     let PicInfo {
         date_time,
         geo_data,
-    } = util::get_meta_for(&info.pictures).await?;
+    } = util::get_meta_for(&info.pictures
+        .iter()
+        .map(|s| format!("storage/{s}"))
+        .collect::<Vec<_>>()
+    ).await?;
 
     let year = match info.year {
         Some(year) => year,

@@ -48,8 +48,8 @@ pub async fn pictures(mut req: Multipart) -> Result<Json<UploadResponse>, Upload
             util::bytes_to_pic_ext(&bytes).ok_or(UploadError::UnknownExtension)?
         );
 
-        file_names.push(file_name.clone());
-        file_workers.push(util::save_bytes(bytes, file_name))
+        file_workers.push(util::save_bytes(bytes, format!("storage/{file_name}")));
+        file_names.push(file_name);
     }
     
     for r in join_all(file_workers).await {
@@ -76,8 +76,8 @@ pub async fn videos(mut req: Multipart) -> Result<Json<UploadResponse>, UploadEr
             util::bytes_to_video_ext(&bytes).ok_or(UploadError::UnknownExtension)?
         );
 
-        file_names.push(file_name.clone());
-        file_workers.push(util::save_bytes(bytes, file_name))
+        file_workers.push(util::save_bytes(bytes, format!("storage/{file_name}")));
+        file_names.push(file_name);
     }
     
     for r in join_all(file_workers).await {

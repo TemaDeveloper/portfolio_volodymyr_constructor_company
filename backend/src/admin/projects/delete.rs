@@ -55,7 +55,7 @@ pub async fn project(
 }
 
 pub async fn file(Path(name): Path<String>) -> Result<StatusCode, DeleteError> {
-    tokio::fs::remove_file(name)
+    tokio::fs::remove_file(format!("storage/{name}"))
         .await
         .map_err(|e| {
             tracing::error!("Error removing file: {e}");

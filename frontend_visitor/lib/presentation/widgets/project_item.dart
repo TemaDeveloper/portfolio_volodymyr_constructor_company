@@ -186,21 +186,21 @@ class ProjectCover extends StatelessWidget {
   final TextStyle? subtitleStyle;
 
   final Animation<double> animation;
-
+// GestureDetector(
+//       onTap: (){
+//         context.router.push(
+//           ProjectsRoute(
+//             title: title,
+//             description: subtitle,
+//           ),
+//         );
+//       },
+//       child: 
   final bool isHover;
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    return GestureDetector(
-      onTap: (){
-        context.router.push(
-          ProjectsRoute(
-            title: title,
-            description: subtitle,
-          ),
-        );
-      },
-      child: Container(
+    return Container(
         width: width,
         height: height,
         color: color ?? Colors.black.withOpacity(0.8),
@@ -236,7 +236,7 @@ class ProjectCover extends StatelessWidget {
             )
           ],
         ),
-      ),
+      
     );
   }
 }

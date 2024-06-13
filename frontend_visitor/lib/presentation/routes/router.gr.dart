@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' as _i3;
 
 import '../pages/home/home_page.dart' as _i1;
 import '../pages/projects/projects_page.dart' as _i4;
+import '../pages/project_details/project_details_page.dart' as _i5;
 
 class AppRouter extends _i2.RootStackRouter {
   AppRouter([_i3.GlobalKey<_i3.NavigatorState>? navigatorKey])
@@ -22,13 +23,22 @@ class AppRouter extends _i2.RootStackRouter {
             title: args.title,
             description: args.description,
           ));
-    }
+    },
+    ProjectDetailsRoute.name: (routeData) {
+      final args = routeData.argsAs<ProjectDetailsRouteArgs>();
+      return _i2.MaterialPageX<dynamic>(
+          routeData: routeData,
+          child: _i5.ProjectDetailsPage(
+            projectId: args.projectId,
+          ));
+    },
   };
 
   @override
   List<_i2.RouteConfig> get routes => [
         _i2.RouteConfig(HomeRoute.name, path: '/'),
         _i2.RouteConfig(ProjectsRoute.name, path: '/projects'),
+        _i2.RouteConfig(ProjectDetailsRoute.name, path: '/project-details'),
       ];
 }
 
@@ -60,3 +70,21 @@ class ProjectsRouteArgs {
   ProjectsRouteArgs({required this.title, required this.description});
 }
 
+/// generated route for
+/// [_i5.ProjectDetailsPage]
+class ProjectDetailsRoute extends _i2.PageRouteInfo<ProjectDetailsRouteArgs> {
+  ProjectDetailsRoute({required int projectId})
+      : super(
+          ProjectDetailsRoute.name,
+          path: '/project-details',
+          args: ProjectDetailsRouteArgs(projectId: projectId),
+        );
+
+  static const String name = 'ProjectDetailsRoute';
+}
+
+class ProjectDetailsRouteArgs {
+  final int projectId;
+
+  ProjectDetailsRouteArgs({required this.projectId});
+}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
+import 'package:nimbus/presentation/routes/router.gr.dart';
 import 'package:nimbus/presentation/widgets/content_area.dart';
 import 'package:nimbus/presentation/widgets/project_item.dart';
 import 'package:nimbus/presentation/widgets/spaces.dart';
@@ -10,66 +11,11 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:auto_route/auto_route.dart';
+import 'package:nimbus/presentation/routes/router.gr.dart';
+import '../project_details/project_model.dart';
 
-class Project {
-  final int year;
-  final String country;
-  final double latitude;
-  final double longitude;
-  final List<String> pictures;
-  final String description;
-  final int id;
-  final String name;
 
-  Project({
-    required this.year,
-    required this.country,
-    required this.latitude,
-    required this.longitude,
-    required this.pictures,
-    required this.description,
-    required this.id,
-    required this.name,
-  });
-
-  factory Project.fromJson(Map<String, dynamic> json) {
-    return Project(
-      year: json['year'],
-      country: json['country'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      pictures: List<String>.from(json['pictures']),
-      description: json['description'],
-      id: json['id'],
-      name: json['name'],
-    );
-  }
-}
-
-Future<List<Project>?> getProjects({String? country, int? year}) async {
-  Map<String, String> queryParams = {};
-  String url = "$baseUrl/api/projects";
-
-  if (country != null) {
-    queryParams['country'] = country;
-  }
-  if (year != null) {
-    queryParams['year'] = year.toString();
-  }
-
-  String queryString = Uri(queryParameters: queryParams).query;
-  url = queryString.isNotEmpty ? '$url?$queryString' : url;
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    List<dynamic> body = json.decode(response.body)["projects"];
-    List<Project> projects =
-        body.map((dynamic item) => Project.fromJson(item)).toList();
-    return projects;
-  } else {
-    return null;
-  }
-}
 
 class ProjectsPage extends StatefulWidget {
   final String title;
@@ -243,21 +189,26 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
     List<Widget> items = [];
     for (int index = 0; index < data.length; index++) {
       items.add(
-        ScaleTransition(
-          scale: _projectScaleAnimation,
-          child: ProjectItem(
-            width: isMobile
-                ? assignWidth(context, 1.0)
-                : assignWidth(context, 0.25),
-            height: assignHeight(context, 0.2),
-            bannerHeight: isMobile
-                ? assignHeight(context, 0.1)
-                : assignHeight(context, 0.1),
-            title: data[index].name,
-            subtitle: data[index].country,
-            imageUrl: data[index].pictures.isNotEmpty
-                ? '$baseUrl/api/storage/${data[index].pictures[0]}'
-                : 'assets/images/placeholder.png',
+        GestureDetector(
+          onTap: () {
+            context.router.push(ProjectDetailsRoute(projectId: data[index].id));
+          },
+          child: ScaleTransition(
+            scale: _projectScaleAnimation,
+            child: ProjectItem(
+              width: isMobile
+                  ? assignWidth(context, 1.0)
+                  : assignWidth(context, 0.25),
+              height: assignHeight(context, 0.2),
+              bannerHeight: isMobile
+                  ? assignHeight(context, 0.1)
+                  : assignHeight(context, 0.1),
+              title: data[index].name,
+              subtitle: data[index].country,
+              imageUrl: data[index].pictures.isNotEmpty
+                  ? '$baseUrl/api/storage/${data[index].pictures[0]}'
+                  : 'assets/images/placeholder.png',
+            ),
           ),
         ),
       );

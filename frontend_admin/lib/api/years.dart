@@ -15,14 +15,14 @@ class Years {
 }
 
 Future<List<String>?> getYears() async {
-  final response = await http.get(Uri.parse("$baseUrl/api/projects/years"));
+  final response = await http.get(Uri.parse('$baseUrl/projects/api/years'));
 
   if (response.statusCode == 200) {
     Map<String, dynamic> jsonResponse = json.decode(response.body);
-    Years yearsResponse = Years.fromJson(jsonResponse);
-    return yearsResponse.years;
+    List<int> intYears = List<int>.from(jsonResponse['years']);
+    List<String> stringYears = intYears.map((year) => year.toString()).toList();
+    return stringYears;
   } else {
     return null;
   }
 }
-

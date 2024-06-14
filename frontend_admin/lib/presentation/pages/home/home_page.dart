@@ -11,6 +11,7 @@ import 'package:nimbus/api/auth.dart';
 import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/api/list_projects.dart';
 import 'package:nimbus/api/upload.dart';
+import 'package:nimbus/api/years.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
@@ -790,15 +791,3 @@ Future<void> _uploadSelectedMedia() async {
   }
 }
 
-Future<List<String>?> getYears() async {
-  final response = await http.get(Uri.parse('$baseUrl/api/years'));
-
-  if (response.statusCode == 200) {
-    Map<String, dynamic> jsonResponse = json.decode(response.body);
-    List<int> intYears = List<int>.from(jsonResponse['years']);
-    List<String> stringYears = intYears.map((year) => year.toString()).toList();
-    return stringYears;
-  } else {
-    return null;
-  }
-}

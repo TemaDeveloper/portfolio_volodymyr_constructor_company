@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nimbus/api/auth.dart';
@@ -27,7 +26,6 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:nimbus/api/create_project.dart';
 import 'package:nimbus/api/file_picker_helper.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -602,10 +600,10 @@ Future<void> _uploadSelectedMedia() async {
 
   try {
     if (images.isNotEmpty) {
-      await UploadClientApi().uploadPictures(images);
+      await uploadPictures(images);
     }
     if (videos.isNotEmpty) {
-      await UploadClientApi().uploadVideos(videos);
+      await uploadVideos(videos);
     }
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Media uploaded successfully')));

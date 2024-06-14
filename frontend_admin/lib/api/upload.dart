@@ -1,48 +1,56 @@
 import 'package:dio/dio.dart';
 import 'package:nimbus/api/constants.dart';
 
-class UploadClientApi {
-  final Dio dio = Dio(BaseOptions(baseUrl: '$baseUrl/api/projects'));
+Future<List<String>> uploadPictures(List<MultipartFile> pictureFiles) async {
+  final Dio dio = Dio();
+  const String url = "$baseUrl/api/projects/pictures";
+  List<String> fileIds = [];
 
-  Future<List<String>> uploadPictures(List<MultipartFile> files) async {
-    final formData = FormData();
-    for (var file in files) {
+  try {
+    FormData formData = FormData();
+    for (var picture in pictureFiles) {
       formData.files.add(MapEntry(
         'files',
-        file,
-      ));
-    }
-    
-    try {
-      final response = await dio.post('/pictures', data: formData);
-      if (response.statusCode == 200) {
-        return List<String>.from(response.data['file_ids']);
-      } else {
-        throw Exception('Failed to upload pictures');
-      }
-    } on DioException catch (e) {
-      throw Exception('Failed to upload pictures: ${e.message}');
-    }
-  }
-
-  Future<List<String>> uploadVideos(List<MultipartFile> files) async {
-    final formData = FormData();
-    for (var file in files) {
-      formData.files.add(MapEntry(
-        'files',
-        file,
+        picture
       ));
     }
 
-    try {
-      final response = await dio.post('/videos', data: formData);
-      if (response.statusCode == 200) {
-        return List<String>.from(response.data['file_ids']);
-      } else {
-        throw Exception('Failed to upload videos');
-      }
-    } on DioException catch (e) {
-      throw Exception('Failed to upload videos: ${e.message}');
+    final response = await dio.post(url, data: formData);
+    if (response.statusCode == 200) {
+      fileIds = List<String>.from(response.data['file_ids']);
+    } else {
+      print("Failed to upload pictures: ${response.statusCode}");
     }
+  } catch (e) {
+    print("Error uploading pictures: $e");
   }
+
+  return fileIds;
+}
+
+Future<List<String>> uploadVideos(List<MultipartFile> videoFiles) async {
+  final Dio dio = Dio();
+  const String url = "$baseUrl/api/projects/videos";
+  List<String> fileIds = [];
+
+  try {
+    FormData formData = FormData();
+    for (var video in videoFiles) {
+      formData.files.add(MapEntry(
+        'files',
+        video
+      ));
+    }
+
+    final response = await dio.post(url, data: formData);
+    if (response.statusCode == 200) {
+      fileIds = List<String>.from(response.data['file_ids']);
+    } else {
+      print("Failed to upload videos: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Error uploading videos: $e");
+  }
+
+  return fileIds;
 }

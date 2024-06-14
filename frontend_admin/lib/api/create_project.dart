@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/api/file_picker_helper.dart';
-import 'package:nimbus/api/upload.dart'; // CustomPickedFile is defined here
+import 'package:nimbus/api/upload.dart';
 
 class GeoData {
   final String country;
@@ -43,18 +39,14 @@ class CreateProjectRequest {
   });
 
   CreateProjectRequest copyWith({
-    String? name,
-    String? description,
-    int? year,
-    GeoData? geoData,
     List<String>? pictures,
     List<String>? videos,
   }) {
     return CreateProjectRequest(
-      name: name ?? this.name,
-      description: description ?? this.description,
-      year: year ?? this.year,
-      geoData: geoData ?? this.geoData,
+      name: this.name,
+      description: this.description,
+      year: this.year,
+      geoData: this.geoData,
       pictures: pictures ?? this.pictures,
       videos: videos ?? this.videos,
     );
@@ -69,7 +61,6 @@ class CreateProjectRequest {
         'videos': videos,
       };
 }
-
 
 class ProjectResponse {
   final int id;
@@ -97,56 +88,29 @@ class ProjectResponse {
   }
 }
 
-Future<ProjectResponse?> createProject(CreateProjectRequest project, List<CustomPickedFile> pictures, List<CustomPickedFile> videos) async {
-  final UploadClientApi uploadApi = UploadClientApi();
-  List<String> pictureIds = [];
-  List<String> videoIds = [];
+Future<ProjectResponse?> createProject(
+  CreateProjectRequest project,
+  List<CustomPickedFile> pictures,
+  List<CustomPickedFile> videos,
+) async {
+  final Dio dio = Dio();
 
   try {
-    // Convert CustomPickedFile to MultipartFile
-    List<MultipartFile> pictureFiles = pictures.map((picture) => MultipartFile.fromBytes(
-      picture.bytes,
-      filename: picture.name,
-      contentType: MediaType('image', 'jpeg'),
-    )).toList();
+    ;
+    List<String> pictureIds = await uploadPictures(pictures.map((p) => p.toMultipartFile()).toList());
+    List<String> videoIds = await uploadVideos(videos.map((p) => p.toMultipartFile()).toList());
 
-    List<MultipartFile> videoFiles = videos.map((video) => MultipartFile.fromBytes(
-      video.bytes,
-      filename: video.name,
-      contentType: MediaType('video', 'mp4'),
-    )).toList();
+    project = project.copyWith(pictures: pictureIds, videos: videoIds);
 
-    // Upload pictures and videos
-    if (pictureFiles.isNotEmpty) {
-      pictureIds = await uploadApi.uploadPictures(pictureFiles);
-    }
-    if (videoFiles.isNotEmpty) {
-      videoIds = await uploadApi.uploadVideos(videoFiles);
-    }
-
-    // Create project request with uploaded file IDs
-    final url = "$baseUrl/api/projects";
-    final request = http.MultipartRequest('POST', Uri.parse(url));
-
-    final projectWithIds = project.copyWith(
-      pictures: pictureIds,
-      videos: videoIds,
-    );
-
-    request.fields['json'] = json.encode(projectWithIds.toJson());
-
-    final response = await request.send();
-
+    final response = await dio.post("$baseUrl/api/projects", data: project.toJson());
     if (response.statusCode == 200) {
-      final responseData = await response.stream.bytesToString();
-      final jsonMap = json.decode(responseData);
-      return ProjectResponse.fromJson(jsonMap);
+      return ProjectResponse.fromJson(response.data);
     } else {
-      print('Failed to upload project: ${response.statusCode}');
+      print("Failed to create project: ${response.statusCode}");
       return null;
     }
   } catch (e) {
-    print('Error uploading project: $e');
+    print("Error creating project: $e");
     return null;
   }
 }

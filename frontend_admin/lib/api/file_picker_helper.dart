@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:html' as html;
@@ -8,6 +8,8 @@ class CustomPickedFile {
   final String name;
 
   CustomPickedFile({required this.bytes, required this.name});
+
+  MultipartFile toMultipartFile() => MultipartFile.fromBytes(this.bytes, filename: this.name);
 }
 
 Future<CustomPickedFile?> pickFile() async {

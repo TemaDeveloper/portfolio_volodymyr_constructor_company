@@ -40,7 +40,10 @@ pub async fn pictures(mut req: Multipart) -> Result<Json<UploadResponse>, Upload
     let mut file_workers = vec![];
 
     while let Some(field) = req.next_field().await? {
-        let field_name = field.file_name().unwrap_or("").to_string();
+        let field_name = field.file_name()
+            .unwrap_or("")
+            .to_string()
+            .replace(" ", "_");
         let bytes = field.bytes().await?;
         let file_name = format!(
             "{}_{field_name}.{}",
@@ -68,7 +71,10 @@ pub async fn videos(mut req: Multipart) -> Result<Json<UploadResponse>, UploadEr
     let mut file_workers = vec![];
 
     while let Some(field) = req.next_field().await? {
-        let field_name = field.file_name().unwrap_or("").to_string();
+        let field_name = field.file_name()
+            .unwrap_or("")
+            .to_string()
+            .replace(" ", "_");
         let bytes = field.bytes().await?;
         let file_name = format!(
             "{}_{field_name}.{}",

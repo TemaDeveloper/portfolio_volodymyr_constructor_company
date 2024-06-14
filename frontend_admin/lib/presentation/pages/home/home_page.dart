@@ -13,7 +13,6 @@ import 'package:nimbus/api/list_projects.dart';
 import 'package:nimbus/api/upload.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
-import 'package:nimbus/presentation/pages/home/sections/uploads.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
 import 'package:nimbus/presentation/widgets/app_drawer.dart';
 import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
@@ -753,7 +752,7 @@ Future<void> _uploadSelectedMedia() async {
               title: projects[index].name,
               subtitle: projects[index].country,
               imageUrl: projects[index].pictures.isNotEmpty
-                  ? '$baseUrl/api/storage/${projects[index].pictures[0]}'
+                  ? '$baseUrl/api/projects/storage/${projects[index].pictures[0]}'
                   : 'assets/images/placeholder.png',
             ),
           ),

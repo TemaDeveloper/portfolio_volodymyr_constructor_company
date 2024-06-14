@@ -736,6 +736,7 @@ Future<void> _uploadSelectedMedia() async {
               year: projects[index].year.toString(),
               country: projects[index].country,
               id: projects[index].id,
+              initialMediaUrls: projects[index].pictures
             ));
           },
           child: ScaleTransition(

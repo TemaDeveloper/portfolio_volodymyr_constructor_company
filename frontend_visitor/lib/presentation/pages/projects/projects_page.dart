@@ -206,7 +206,7 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
               title: data[index].name,
               subtitle: data[index].country,
               imageUrl: data[index].pictures.isNotEmpty
-                  ? '$baseUrl/api/storage/${data[index].pictures[0]}'
+                  ? '$baseUrl/api/projects/storage/${data[index].pictures[0]}'
                   : 'assets/images/placeholder.png',
             ),
           ),

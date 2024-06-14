@@ -16,6 +16,7 @@ class UpgradeProjectPage extends StatefulWidget {
   final String year;
   final String country;
   final int id;
+  final List<String> initialMediaUrls;
 
   UpgradeProjectPage({
     required this.title,
@@ -23,6 +24,7 @@ class UpgradeProjectPage extends StatefulWidget {
     required this.year,
     required this.country,
     required this.id,
+    required this.initialMediaUrls,
   });
 
   @override
@@ -35,6 +37,7 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
   List<XFile> _mediaFiles = [];
+  List<String> _serverMediaUrls = [];
 
   @override
   void initState() {
@@ -43,25 +46,10 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
     _descriptionController.text = widget.description;
     _yearController.text = widget.year;
     _locationController.text = widget.country;
+    _serverMediaUrls = widget.initialMediaUrls;
   }
 
-  Future<void> _pickMedia(ImageSource source) async {
-    final ImagePicker _picker = ImagePicker();
-    final List<XFile>? pickedFiles = await _picker.pickMultiImage();
-    final XFile? pickedVideo = await _picker.pickVideo(source: source);
 
-    if (pickedFiles != null) {
-      setState(() {
-        _mediaFiles.addAll(pickedFiles);
-      });
-    }
-
-    if (pickedVideo != null) {
-      setState(() {
-        _mediaFiles.add(pickedVideo);
-      });
-    }
-  }
 
   bool isMobile(BuildContext context) {
     return MediaQuery.of(context).size.width < RefinedBreakpoints().tabletLarge;
@@ -130,6 +118,12 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
                   ),
                 ),
                 SpaceH20(),
+                if (_serverMediaUrls.isNotEmpty) _buildServerMedia(),
+                SpaceH20(),
+                _buildImagePlaceholder(context),
+                SpaceH20(),
+                if (_mediaFiles.isNotEmpty) _buildSelectedMedia(),
+                SpaceH20(),
                 _buildTextField(_titleController, 'Title'),
                 SpaceH20(),
                 _buildTextField(_descriptionController, 'Description'),
@@ -137,10 +131,6 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
                 _buildTextField(_locationController, 'Location'),
                 SpaceH20(),
                 _buildTextField(_yearController, 'Year'),
-                SpaceH20(),
-                _buildImagePlaceholder(context),
-                SpaceH20(),
-                if (_mediaFiles.isNotEmpty) _buildSelectedMedia(),
                 SpaceH20(),
                 Row(
                   children: [
@@ -240,60 +230,154 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
     );
   }
 
-  Widget _buildSelectedMedia() {
+  Widget _buildServerMedia() {
+    return Column(
+      children: _serverMediaUrls.map((url) {
+        return Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  if (url.endsWith('.mp4') || url.endsWith('.mov')) // Check for video files
+                    Container(
+                      width: 100,
+                      height: 100,
+                      child: Icon(Icons.videocam, size: 50),
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    )
+                  else // Display as image
+                    Image.network(
+                      url,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 100,
+                          height: 100,
+                          color: Colors.grey[300],
+                          child: Icon(
+                            Icons.error,
+                            color: Colors.red,
+                          ),
+                        );
+                      },
+                    ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      url.split('/').last, // Displaying the file name
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      setState(() {
+                        _serverMediaUrls.remove(url);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _serverMediaUrls.remove(url);
+                  });
+                },
+                child: Icon(Icons.cancel, color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      }).toList(),
+    );
+  }
+
+
+   Widget _buildSelectedMedia() {
     return Column(
       children: _mediaFiles.map((media) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            children: [
-              if (media.mimeType?.startsWith('image/') ?? false)
-                if (kIsWeb)
-                  Image.network(
-                    media.path,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  )
-                else
-                  Image.file(
-                    File(media.path),
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  )
-              else if (media.mimeType?.startsWith('video/') ?? false)
-                Container(
-                  width: 100,
-                  height: 100,
-                  child: Icon(Icons.videocam, size: 50),
-                  decoration: BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.circular(10),
+        return Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  if (media.mimeType?.startsWith('image/') ?? false)
+                    if (kIsWeb)
+                      Image.network(
+                        media.path,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      )
+                    else
+                      Image.file(
+                        File(media.path),
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      )
+                  else if (media.mimeType?.startsWith('video/') ?? false)
+                    Container(
+                      width: 100,
+                      height: 100,
+                      child: Icon(Icons.videocam, size: 50),
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      media.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  media.name,
-                  style: TextStyle(
-                    fontSize: 16,
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      setState(() {
+                        _mediaFiles.remove(media);
+                      });
+                    },
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+                ],
               ),
-              IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: GestureDetector(
+                onTap: () {
                   setState(() {
                     _mediaFiles.remove(media);
                   });
                 },
+                child: Icon(Icons.cancel, color: Colors.red),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       }).toList(),
     );
   }
 }
+

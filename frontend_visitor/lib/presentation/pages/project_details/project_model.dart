@@ -8,6 +8,7 @@ class Project {
   final double latitude;
   final double longitude;
   final List<String> pictures;
+  final List<String> videos;
   final String description;
   final int id;
   final String name;
@@ -18,6 +19,7 @@ class Project {
     required this.latitude,
     required this.longitude,
     required this.pictures,
+    required this.videos,
     required this.description,
     required this.id,
     required this.name,
@@ -30,6 +32,7 @@ class Project {
       latitude: json['latitude'],
       longitude: json['longitude'],
       pictures: List<String>.from(json['pictures']),
+      videos: List<String>.from(json['videos']),
       description: json['description'],
       id: json['id'],
       name: json['name'],

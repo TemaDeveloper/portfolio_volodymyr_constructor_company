@@ -7,14 +7,15 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tower_http::services::ServeDir;
 
-const ALLOWED_FILE_EXT: [&'static str; 7] = [
+const ALLOWED_FILE_EXT: [&'static str; 8] = [
     "jpg",
     "jpeg",
     "png",
     "heic",
     "html",
     "css",
-    "js"
+    "js", 
+    "mp4"
 ];
 
 async fn filter_file_ext(req: Request<Body>, next: Next) -> impl IntoResponse {

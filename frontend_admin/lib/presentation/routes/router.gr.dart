@@ -32,6 +32,7 @@ class AppRouter extends _i2.RootStackRouter {
             year: args.year,
             country: args.country,
             id: args.id,
+            initialMediaUrls: args.initialMediaUrls,
           ));
     },
     SignUpRoute.name: (routeData) {
@@ -75,6 +76,7 @@ class UpgradeProjectRoute extends _i2.PageRouteInfo<UpgradeProjectRouteArgs> {
     required String country,
     required int id, 
     required String year,
+    required List<String> initialMediaUrls,
   }) : super(
           UpgradeProjectRoute.name,
           path: '/upgrade-project',
@@ -83,7 +85,8 @@ class UpgradeProjectRoute extends _i2.PageRouteInfo<UpgradeProjectRouteArgs> {
             description: description,
             year: year,
             country: country,
-            id: id
+            id: id,
+            initialMediaUrls: initialMediaUrls,
           ),
         );
 
@@ -103,6 +106,7 @@ class UpgradeProjectRouteArgs {
   final String year;
   final int id;
   final String country;
+  final List<String> initialMediaUrls;
 
   UpgradeProjectRouteArgs({
     required this.title,
@@ -110,5 +114,6 @@ class UpgradeProjectRouteArgs {
     required this.year,
     required this.country,
     required this.id,
+    required this.initialMediaUrls,
   });
 }

@@ -20,9 +20,9 @@ pub async fn create_routes() -> anyhow::Result<Router> {
             .route("/auth", routing::post(admin::auth))) /* auth endpoint */
 
         .nest("/visitor", Router::new()
-            .route("/:visitor_uuid", routing::get(visitor::page))
-            .nest_service("/static", visitor::static_router())
+            .route("/home/:visitor_uuid", routing::get(visitor::page))
             .nest("/api", visitor::api_router(state.clone())))
+            .nest_service("/", visitor::static_router())
 
         .with_state(state)
         .layer(CorsLayer::permissive())

@@ -62,7 +62,7 @@ pub async fn page(
 }
 
 pub fn static_router() -> ServeDir {
-    ServeDir::new("../../frontend_visitor/build/web") 
+    ServeDir::new("../frontend_visitor/build/web") 
 }
 
 pub fn api_router(state: AppState) -> axum::Router<AppState> {

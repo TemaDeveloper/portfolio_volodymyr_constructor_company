@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/artemijfridriksen/Downloads/flutter
-FLUTTER_APPLICATION_PATH=/Users/artemijfridriksen/projects/portfolio_builder/portfolio_volodymyr_constructor_company/frontend_visitor
+FLUTTER_ROOT=/opt/flutter
+FLUTTER_APPLICATION_PATH=/home/ed/projects/portfolio_volodymyr_constructor_company/frontend_visitor
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_TARGET=lib/main.dart
 FLUTTER_BUILD_DIR=build

@@ -86,15 +86,6 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            context.router.pop();
-          },
-        ),
-        title: Text('Project Details'),
-      ),
       body: project == null
           ? Center(child: CircularProgressIndicator())
           : ResponsiveBuilder(
@@ -136,50 +127,56 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
 
   Widget _buildMediaSlider() {
     bool isSingleMedia = (project!.pictures.length + project!.videos.length) == 1;
-    return Container(
-      child: Stack(
-        children: [
-          PageView.builder(
-            controller: _pageController,
-            itemCount: project!.pictures.length + project!.videos.length,
-            itemBuilder: (context, index) {
-              if (index < project!.pictures.length) {
-                return Image.network(
-                  '$baseUrl/api/projects/storage/${project!.pictures[index]}',
-                  fit: BoxFit.fill,
-                );
-              } else {
-                int videoIndex = index - project!.pictures.length;
-                if (kIsWeb) {
-                  final videoId = 'videoElement_${project!.videos[videoIndex].hashCode}';
-                  print('Rendering HtmlElementView with id: $videoId');
-                  return HtmlElementView(viewType: videoId);
-                } else {
-                  // Use another method for non-web platforms, e.g., Chewie
-                  return Text("Video not supported in this implementation for non-web platforms.");
-                }
-              }
-            },
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _pageController,
+                itemCount: project!.pictures.length + project!.videos.length,
+                itemBuilder: (context, index) {
+                  if (index < project!.pictures.length) {
+                    return Image.network(
+                      '$baseUrl/api/projects/storage/${project!.pictures[index]}',
+                      fit: BoxFit.fill,
+                    );
+                  } else {
+                    int videoIndex = index - project!.pictures.length;
+                    if (kIsWeb) {
+                      final videoId = 'videoElement_${project!.videos[videoIndex].hashCode}';
+                      print('Rendering HtmlElementView with id: $videoId');
+                      return HtmlElementView(viewType: videoId);
+                    } else {
+                      // Use another method for non-web platforms, e.g., Chewie
+                      return Text("Video not supported in this implementation for non-web platforms.");
+                    }
+                  }
+                },
+              ),
+              Positioned(
+                left: 8.0,
+                top: 0,
+                bottom: 0,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_left, color: isSingleMedia ? Colors.grey : Colors.black),
+                  onPressed: isSingleMedia ? null : _previousImage,
+                ),
+              ),
+              Positioned(
+                right: 8.0,
+                top: 0,
+                bottom: 0,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_right, color: isSingleMedia ? Colors.grey : Colors.black),
+                  onPressed: isSingleMedia ? null : _nextImage,
+                ),
+              ),
+            ],
           ),
-          Positioned(
-            left: 8.0,
-            top: 0,
-            bottom: 0,
-            child: IconButton(
-              icon: Icon(Icons.arrow_left, color: isSingleMedia ? Colors.grey : Colors.black),
-              onPressed: isSingleMedia ? null : _previousImage,
-            ),
-          ),
-          Positioned(
-            right: 8.0,
-            top: 0,
-            bottom: 0,
-            child: IconButton(
-              icon: Icon(Icons.arrow_right, color: isSingleMedia ? Colors.grey : Colors.black),
-              onPressed: isSingleMedia ? null : _nextImage,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

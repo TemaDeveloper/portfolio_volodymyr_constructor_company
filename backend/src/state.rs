@@ -55,6 +55,7 @@ impl AppState {
     }
 
     pub async fn validate_visitor(&self, uuid: &str) -> Result<bool, DbErr> {
+        tracing::warn!("got uuid here: {uuid}");
         let count = visitor::Entity::find()
             .filter(visitor::Column::Uuid.eq(uuid))
             .filter(visitor::Column::TimeOut.gte(chrono::Local::now().naive_local()))
@@ -64,7 +65,8 @@ impl AppState {
         if count > 1 {
             tracing::warn!("It's probaly an error, or there are 2 duplicate uuids");
         }
-
+        
+        tracing::warn!("Count={count}");
         Ok(count == 1)
     }
 }

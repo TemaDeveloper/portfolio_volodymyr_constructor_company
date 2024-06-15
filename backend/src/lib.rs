@@ -21,8 +21,8 @@ pub async fn create_routes() -> anyhow::Result<Router> {
 
         .nest("/visitor", Router::new()
             .route("/home/:visitor_uuid", routing::get(visitor::page))
-            .nest("/api", visitor::api_router(state.clone())))
-            .nest_service("/", visitor::static_router())
+            .nest("/api", visitor::api_router(state.clone()))
+            .nest_service("/", visitor::static_router()))
 
         .with_state(state)
         .layer(CorsLayer::permissive())

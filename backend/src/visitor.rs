@@ -18,15 +18,17 @@ pub async fn validate_visitor_cookie(
     req: Request<Body>,
     next: Next,
 ) -> impl IntoResponse {
-    tracing::warn!("Cookies: {cookie_jar:?}");
     let uuid = cookie_jar.get(VISITOR_UUID_COOKIE_NAME);
     if let Some(uuid) = uuid {
+        tracing::warn!("Cookie: {}", uuid.value());
         if state.validate_visitor(&uuid.value()).await.unwrap_or(false) {
             next.run(req).await
         } else {
+            tracing::error!("Invalid uuid");
             StatusCode::UNAUTHORIZED.into_response()
         }
     } else {
+        tracing::error!("No cookie found{uuid:?}");
         (
             StatusCode::EXPECTATION_FAILED,
             Json(json!({"error": format!("No cookie with name={}", VISITOR_UUID_COOKIE_NAME)})),
@@ -40,15 +42,18 @@ pub async fn page(
     jar: CookieJar,
     Path(uuid): Path<String>
 ) -> impl IntoResponse {
+    tracing::warn!("Got uuid on login: {uuid}");
     let is_valid = state.validate_visitor(&uuid)
         .await
         .unwrap_or(false);
 
     if is_valid {
         let file = include_str!("../../frontend_visitor/build/web/index.html");
+        let mut cookie = Cookie::new(VISITOR_UUID_COOKIE_NAME, uuid);
+        cookie.set_path("/");
         (
             StatusCode::OK,
-            jar.add(Cookie::new(VISITOR_UUID_COOKIE_NAME, uuid)),
+            jar.add(cookie),
             Html::from(file)
         )
             .into_response()

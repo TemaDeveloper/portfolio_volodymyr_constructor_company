@@ -88,7 +88,7 @@ Future<String> issueVisitorLink({required int validFor}) async {
 
     if (response.statusCode == 200) {
       final uuid = response.data["uuid"];
-      return "$baseUrl/visitor/$uuid";
+      return "$baseBaseUrl/visitor/home/$uuid";
     } else {
       throw Exception(
           'Failed to generate link. Status code: ${response.statusCode}, Body: ${response.data}');

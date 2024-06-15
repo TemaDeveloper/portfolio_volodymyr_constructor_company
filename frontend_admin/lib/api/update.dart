@@ -1,18 +1,22 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
-
+ 
 class UpdateProjectRequest {
   final String? name;
   final String? description;
   final int? year;
   final String? country;
+  final List<String>? pictures;
+  final List<String>? videos;
 
   UpdateProjectRequest({
     this.name,
     this.description,
     this.year,
     this.country,
+    this.pictures,
+    this.videos,
   });
 
   Map<String, dynamic> toJson() => {
@@ -20,6 +24,8 @@ class UpdateProjectRequest {
         'description': description,
         'year': year,
         'country': country,
+        'pictures': pictures,
+        'videos': videos,
       };
 }
 

@@ -123,11 +123,11 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
     return Row(
       children: [
         Expanded(
-          flex: 2,
+          flex: 4,
           child: _buildMediaSlider(),
         ),
         Expanded(
-          flex: 3,
+          flex: 2,
           child: _buildProjectDetails(),
         ),
       ],
@@ -137,7 +137,6 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
   Widget _buildMediaSlider() {
     bool isSingleMedia = (project!.pictures.length + project!.videos.length) == 1;
     return Container(
-      height: 400,
       child: Stack(
         children: [
           PageView.builder(
@@ -147,7 +146,7 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
               if (index < project!.pictures.length) {
                 return Image.network(
                   '$baseUrl/api/projects/storage/${project!.pictures[index]}',
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                 );
               } else {
                 int videoIndex = index - project!.pictures.length;
@@ -189,25 +188,29 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             project!.name,
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
             project!.description,
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
           SizedBox(height: 8),
           Text(
             'Year: ${project!.year}',
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
           SizedBox(height: 8),
           Text(
             'Location: ${project!.country}',
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
         ],

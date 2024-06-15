@@ -587,32 +587,6 @@ Widget _buildSelectedMedia() {
   );
 }
 
-Future<void> _uploadSelectedMedia() async {
-  final images = _mediaFiles
-      .where((file) => file.mimeType?.startsWith('image/') ?? false)
-      .map((file) => MultipartFile.fromFileSync(file.path, filename: file.name))
-      .toList();
-
-  final videos = _mediaFiles
-      .where((file) => file.mimeType?.startsWith('video/') ?? false)
-      .map((file) => MultipartFile.fromFileSync(file.path, filename: file.name))
-      .toList();
-
-  try {
-    if (images.isNotEmpty) {
-      await uploadPictures(images);
-    }
-    if (videos.isNotEmpty) {
-      await uploadVideos(videos);
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Media uploaded successfully')));
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload some media')));
-  }
-}
-
   Widget _buildProjectsSection(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double contentAreaWidth = screenWidth - (getSidePadding(context) * 2);
@@ -736,7 +710,6 @@ Future<void> _uploadSelectedMedia() async {
               year: projects[index].year.toString(),
               country: projects[index].country,
               id: projects[index].id,
-              initialMediaUrls: projects[index].pictures
             ));
           },
           child: ScaleTransition(

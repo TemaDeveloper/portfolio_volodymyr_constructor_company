@@ -1,26 +1,37 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
 import 'package:nimbus/values/values.dart';
-import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 import 'package:dio/dio.dart';
 import 'app_theme.dart';
 
+// String? authToken;
+Dio dio = Dio();
+
+// String? getCookies(String key) {
+//   final cookies = html.document.cookie?.split('; ') ?? [];
+//   for (var cookie in cookies) {
+//     final cookieParts = cookie.split('=');
+//     if (cookieParts.length == 2 && cookieParts[0] == key) {
+//       return cookieParts[1];
+//     }
+//   }
+//   return null;
+// }
 
 void main() async {
-  // if (kDebugMode && kIsWeb) {
-  //   final uuid = "fb120ef3-7d19-4190-90fc-6d4b16cbfb86";
-  //   final dio = Dio();
-  //   try {
-  //     final resp = await dio.get("http://127.0.0.1:8000/visitor/$uuid");
-  //     assert(resp.statusCode == 200);
-  //     html.document.cookie = "visitor-uuid=$uuid;";
-  //   } on DioException catch (e) {
-  //     print("Failed to fetch visitor UUID: $e");
-  //   }
-  // }
+  // authToken = getCookies("visitor-uuid") ?? "726c65a6-2cb4-479f-a137-2b80a5f0234d";
+  // dio.interceptors.add(InterceptorsWrapper(
+  //   onRequest: (options, handler) {
+  //     if (authToken != null) {
+  //       options.headers['Authorization'] = "Bearer $authToken";
+  //     } else {
+  //       print("Problem: called without auth token");
+  //     }
+  //     return handler.next(options);
+  //   },
+  // ));
   runApp(PortfolioBuilder());
 }
 

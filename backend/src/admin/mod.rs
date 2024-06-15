@@ -26,10 +26,6 @@ pub fn api_router() -> axum::Router<AppState> {
         .layer(middleware::from_fn(verify::is_admin))
 }
 
-// async fn page() -> Html<String> {
-//     Html::from(include_str!("../../../frontend_admin/build/web/index.html").to_string())
-// }
-
 pub fn page_router() -> axum::Router<AppState> {
     axum::Router::new()
         .nest_service("/", ServeDir::new("../frontend_admin/build/web"))

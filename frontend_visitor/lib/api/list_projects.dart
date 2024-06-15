@@ -1,6 +1,5 @@
-import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
-import 'dart:convert';
+import 'package:nimbus/main.dart';
 
 class Project {
   final int year;
@@ -50,10 +49,10 @@ Future<List<Project>?> getProjects({String? country, int? year}) async {
 
   String queryString = Uri(queryParameters: queryParams).query;
   url = queryString.isNotEmpty ? '$url?$queryString' : url;
-  final response = await http.get(Uri.parse(url));
+  final response = await dio.get(url);
 
   if (response.statusCode == 200) {
-    List<dynamic> body = json.decode(response.body)["projects"];
+    List<dynamic> body = response.data["projects"];
     List<Project> projects =
         body.map((dynamic item) => Project.fromJson(item)).toList();
     return projects;

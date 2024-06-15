@@ -1,5 +1,5 @@
-import 'package:dio/dio.dart';
 import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/main.dart';
 
 class CountriesResponse {
   final List<String> countries;
@@ -24,7 +24,7 @@ Future<List<String>?> getCountries({int? year}) async {
 
     String queryString = Uri(queryParameters: queryParams).query;
     String url = queryString.isNotEmpty ? '$rootUrl?$queryString' : rootUrl;
-    final response = await Dio().get(url);
+    final response = await dio.get(url);
     if (response.statusCode == 200) {
       // Directly use the response data as a JSON map
       Map<String, dynamic> jsonResponse = response.data;

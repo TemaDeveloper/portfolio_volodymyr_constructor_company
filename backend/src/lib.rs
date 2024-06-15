@@ -21,6 +21,7 @@ pub async fn create_routes() -> anyhow::Result<Router> {
 
         .nest("/visitor", Router::new()
             .route("/:visitor_uuid", routing::get(visitor::page))
+            .nest_service("/static", visitor::static_router())
             .nest("/api", visitor::api_router(state.clone())))
 
         .with_state(state)

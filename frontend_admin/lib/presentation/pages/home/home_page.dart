@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,8 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nimbus/api/auth.dart';
 import 'package:nimbus/api/constants.dart';
-import 'package:nimbus/api/list_projects.dart';
-import 'package:nimbus/api/upload.dart';
+import 'package:nimbus/api/project_model.dart';
 import 'package:nimbus/api/years.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/pages/home/sections/projects_section.dart';
@@ -25,7 +22,6 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:nimbus/api/create_project.dart';
 import 'package:nimbus/api/file_picker_helper.dart';
-import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   @override
@@ -196,7 +192,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
-
   void _showMediaPickerOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -208,7 +203,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             title: Text('Pick Images'),
             onTap: () async {
               Navigator.pop(context);
-              final List<XFile>? pickedFiles = await ImagePicker().pickMultiImage();
+              final List<XFile>? pickedFiles =
+                  await ImagePicker().pickMultiImage();
               if (pickedFiles != null) {
                 setState(() {
                   _mediaFiles.addAll(pickedFiles);
@@ -221,7 +217,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             title: Text('Pick Video'),
             onTap: () async {
               Navigator.pop(context);
-              final XFile? pickedVideo = await ImagePicker().pickVideo(source: ImageSource.gallery);
+              final XFile? pickedVideo =
+                  await ImagePicker().pickVideo(source: ImageSource.gallery);
               if (pickedVideo != null) {
                 setState(() {
                   _mediaFiles.add(pickedVideo);
@@ -235,65 +232,63 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<CustomPickedFile> convertXFileToCustomPickedFile(XFile file) async {
-  return CustomPickedFile(
-    name: file.name,
-    bytes: await file.readAsBytes(),
-  );
-}
-
+    return CustomPickedFile(
+      name: file.name,
+      bytes: await file.readAsBytes(),
+    );
+  }
 
   Future<void> _addProject() async {
-  if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please fill all the fields')),
+    if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all the fields')),
+      );
+      return;
+    }
+
+    final List<CustomPickedFile> pictures = [];
+    final List<CustomPickedFile> videos = [];
+
+    for (XFile file in _mediaFiles) {
+      if (file.mimeType?.startsWith('image/') ?? false) {
+        pictures.add(await convertXFileToCustomPickedFile(file));
+      } else if (file.mimeType?.startsWith('video/') ?? false) {
+        videos.add(await convertXFileToCustomPickedFile(file));
+      }
+    }
+
+    final project = CreateProjectRequest(
+      name: _titleController.text,
+      description: _descriptionController.text,
+      year: int.tryParse(_yearController.text),
+      geoData: GeoData(
+        country: _countryController.text,
+        latitude: 0.0, // Replace with actual latitude
+        longitude: 0.0, // Replace with actual longitude
+      ),
     );
-    return;
-  }
 
-  final List<CustomPickedFile> pictures = [];
-  final List<CustomPickedFile> videos = [];
+    ProjectResponse? response = await createProject(project, pictures, videos);
 
-  for (XFile file in _mediaFiles) {
-    if (file.mimeType?.startsWith('image/') ?? false) {
-      pictures.add(await convertXFileToCustomPickedFile(file));
-    } else if (file.mimeType?.startsWith('video/') ?? false) {
-      videos.add(await convertXFileToCustomPickedFile(file));
+    if (response != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Project created successfully')),
+      );
+      // Clear the form
+      setState(() {
+        _titleController.clear();
+        _descriptionController.clear();
+        _yearController.clear();
+        _countryController.clear();
+        _mediaFiles.clear();
+      });
+      _fetchProjects();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create project')),
+      );
     }
   }
-
-  final project = CreateProjectRequest(
-    name: _titleController.text,
-    description: _descriptionController.text,
-    year: int.tryParse(_yearController.text),
-    geoData: GeoData(
-      country: _countryController.text,
-      latitude: 0.0, // Replace with actual latitude
-      longitude: 0.0, // Replace with actual longitude
-    ),
-  );
-
-  ProjectResponse? response = await createProject(project, pictures, videos);
-
-  if (response != null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Project created successfully')),
-    );
-    // Clear the form
-    setState(() {
-      _titleController.clear();
-      _descriptionController.clear();
-      _yearController.clear();
-      _countryController.clear();
-      _mediaFiles.clear();
-    });
-    _fetchProjects();
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to create project')),
-    );
-  }
-}
-
 
   Future<void> _playProjectAnimation() async {
     try {
@@ -392,7 +387,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             fontSize: 16,
           ),
         ),
-        
         Column(
           children: [
             Slider(
@@ -413,11 +407,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               style: TextStyle(fontSize: 18),
             ),
             SpaceW20(),
-        NimbusButton(
-          buttonTitle: "Generate Link",
-          onPressed: _generateLink,
-          
-        ),
+            NimbusButton(
+              buttonTitle: "Generate Link",
+              onPressed: _generateLink,
+            ),
           ],
         )
       ],
@@ -425,167 +418,167 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildAddProjectSection(BuildContext context) {
-  return Card(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(15.0),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Add New Project',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SpaceH20(),
-          InkWell(
-            onTap: () => _showMediaPickerOptions(context),
-            child: Container(
-              width: isMobile(context)
-                  ? assignWidth(context, 0.9)
-                  : assignWidth(context, 0.5),
-              height: isMobile(context)
-                  ? assignHeight(context, 0.2)
-                  : assignHeight(context, 0.3),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add_a_photo,
-                      size: 50,
-                      color: Colors.grey,
-                    ),
-                    Text(
-                      "Tap to add media",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SpaceH20(),
-          if (_mediaFiles.isNotEmpty) _buildSelectedMedia(),
-          SpaceH20(),
-          TextField(
-            controller: _titleController,
-            decoration: InputDecoration(
-              labelText: 'Project Title',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          SpaceH20(),
-          TextField(
-            controller: _descriptionController,
-            decoration: InputDecoration(
-              labelText: 'Project Description',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          SpaceH20(),
-          TextField(
-            controller: _yearController,
-            decoration: InputDecoration(
-              labelText: 'Project Year',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          SpaceH20(),
-          TextField(
-            controller: _countryController,
-            decoration: InputDecoration(
-              labelText: 'Project Country',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          SpaceH20(),
-          NimbusButton(
-            buttonTitle: "Add Project",
-            onPressed: _addProject,
-          ),
-        ],
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
       ),
-    ),
-  );
-}
-
-Widget _buildSelectedMedia() {
-  return Column(
-    children: _mediaFiles.map((media) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (media.mimeType?.startsWith('image/') ?? false)
-              if (kIsWeb)
-                Image.network(
-                  media.path,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                )
-              else
-                Image.file(
-                  File(media.path),
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                )
-            else if (media.mimeType?.startsWith('video/') ?? false)
-              Container(
-                width: 100,
-                height: 100,
-                child: Icon(Icons.videocam, size: 50),
-                decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                media.name,
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-                overflow: TextOverflow.ellipsis,
+            Text(
+              'Add New Project',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                setState(() {
-                  _mediaFiles.remove(media);
-                });
-              },
+            SpaceH20(),
+            InkWell(
+              onTap: () => _showMediaPickerOptions(context),
+              child: Container(
+                width: isMobile(context)
+                    ? assignWidth(context, 0.9)
+                    : assignWidth(context, 0.5),
+                height: isMobile(context)
+                    ? assignHeight(context, 0.2)
+                    : assignHeight(context, 0.3),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_a_photo,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                      Text(
+                        "Tap to add media",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SpaceH20(),
+            if (_mediaFiles.isNotEmpty) _buildSelectedMedia(),
+            SpaceH20(),
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                labelText: 'Project Title',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SpaceH20(),
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(
+                labelText: 'Project Description',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SpaceH20(),
+            TextField(
+              controller: _yearController,
+              decoration: InputDecoration(
+                labelText: 'Project Year',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SpaceH20(),
+            TextField(
+              controller: _countryController,
+              decoration: InputDecoration(
+                labelText: 'Project Country',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SpaceH20(),
+            NimbusButton(
+              buttonTitle: "Add Project",
+              onPressed: _addProject,
             ),
           ],
         ),
-      );
-    }).toList(),
-  );
-}
+      ),
+    );
+  }
+
+  Widget _buildSelectedMedia() {
+    return Column(
+      children: _mediaFiles.map((media) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            children: [
+              if (media.mimeType?.startsWith('image/') ?? false)
+                if (kIsWeb)
+                  Image.network(
+                    media.path,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  )
+                else
+                  Image.file(
+                    File(media.path),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  )
+              else if (media.mimeType?.startsWith('video/') ?? false)
+                Container(
+                  width: 100,
+                  height: 100,
+                  child: Icon(Icons.videocam, size: 50),
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  media.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  setState(() {
+                    _mediaFiles.remove(media);
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
 
   Widget _buildProjectsSection(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -764,4 +757,3 @@ Widget _buildSelectedMedia() {
     return width < RefinedBreakpoints().tabletLarge;
   }
 }
-

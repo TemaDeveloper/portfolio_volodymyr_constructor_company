@@ -1,6 +1,5 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/main.dart';
 
 class CountriesResponse {
   final List<String> countries;
@@ -24,11 +23,10 @@ Future<List<String>?> getCountries({int? year}) async {
 
   String queryString = Uri(queryParameters: queryParams).query;
   String url = queryString.isNotEmpty ? '$rootUrl?$queryString' : rootUrl;
-  final response = await http.get(Uri.parse(url));
+  final response = await dio.get(url);
 
   if (response.statusCode == 200) {
-    Map<String, dynamic> jsonResponse = json.decode(response.body);
-    CountriesResponse countriesResponse = CountriesResponse.fromJson(jsonResponse);
+    CountriesResponse countriesResponse = CountriesResponse.fromJson(response.data);
     return countriesResponse.countries;
   } else {
     return null;

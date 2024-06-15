@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/main.dart';
 
 String _hashPassword(String password) {
   var bytes = utf8.encode(password);
@@ -13,10 +13,11 @@ String _hashPassword(String password) {
 /// it also encodes the pass
 /// true if sucsess
 Future<bool> auth(String email, String pass) async {
-  // pass = _hashPassword(pass);
+  pass = _hashPassword(pass);
   final resp;
   try {
-    resp = await Dio().post("http://127.0.0.1:8000/admin/auth", data: <String, String>{
+    resp = await dio
+        .post("http://127.0.0.1:8000/admin/auth", data: <String, String>{
       "email": email,
       "password": pass,
     });
@@ -25,7 +26,17 @@ Future<bool> auth(String email, String pass) async {
     return false;
   }
 
-  print("Code: ${resp.statusCode}|Body: ${resp.data}");
+  authToken = resp.headers.value('Authorization');
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) {
+      if (authToken != null) {
+        options.headers['Authorization'] = authToken;
+      } else {
+        print("Problem: called without auth token");
+      }
+      return handler.next(options);
+    },
+  ));
 
   if (resp.statusCode == 200) {
     return true;
@@ -41,18 +52,15 @@ Future<RegisterStatus> registerAdmin(
     required String pass,
     String? name,
     String? lastName}) async {
-  // pass = _hashPassword(pass);
-  final resp = await http.post(
-    Uri.parse("$baseUrl/api/register-admin"),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String?>{
+  pass = _hashPassword(pass);
+  final resp = await dio.post(
+    "$baseUrl/api/register-admin",
+    data: <String, String?>{
       "email": email,
       "password": pass,
       "name": name,
       "last_name": lastName,
-    }),
+    },
   );
 
   if (resp.statusCode == 201) {
@@ -70,22 +78,22 @@ Future<RegisterStatus> registerAdmin(
 /// Theoretically there is no point of failure
 Future<String> issueVisitorLink({required int validFor}) async {
   final url = "$baseUrl/api/visitor";
-  final response = await http.post(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, int>{
-      "valid_for_sec": validFor, // Convert to string to simulate Uint64
-    }),
-  );
+  try {
+    final response = await dio.post(
+      url,
+      data: {
+        "valid_for_sec": validFor, // Convert to string to simulate Uint64
+      },
+    );
 
-  if (response.statusCode == 200) {
-    final jsonResponse = json.decode(response.body);
-    final uuid = jsonResponse["uuid"];
-    return "$baseUrl/visitor/$uuid";
-  } else {
-    throw Exception(
-        'Failed to generate link. Status code: ${response.statusCode}, Body: ${response.body}');
+    if (response.statusCode == 200) {
+      final uuid = response.data["uuid"];
+      return "$baseUrl/visitor/$uuid";
+    } else {
+      throw Exception(
+          'Failed to generate link. Status code: ${response.statusCode}, Body: ${response.data}');
+    }
+  } catch (e) {
+    return e.toString();
   }
 }

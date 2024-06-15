@@ -1,20 +1,18 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui_web';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/api/delete.dart';
 import 'package:nimbus/api/delete_file.dart';
+import 'package:nimbus/api/project_model.dart';
 import 'package:nimbus/api/update.dart';
 import 'package:nimbus/api/upload.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
 import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
 import 'package:nimbus/presentation/widgets/spaces.dart';
-import 'project_model.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_html/html.dart' as html;
 

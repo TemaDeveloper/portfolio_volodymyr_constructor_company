@@ -1,8 +1,9 @@
-use axum::{extract::State, response::IntoResponse, Json, http::StatusCode};
+use axum::{body::Body, extract::State, http::StatusCode, response::{IntoResponse, Response}, Json};
+use reqwest::header;
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter};
 use serde::Deserialize;
 use serde_json::json;
-use crate::{entities, state::AppState};
+use crate::{admin::auth::issue_jwt, entities, state::AppState};
 
 
 #[derive(Deserialize)]
@@ -16,7 +17,7 @@ pub struct AddUserReqBody {
 pub async fn new_admin(
     State(state): State<AppState>,
     Json(user_info): Json<AddUserReqBody>,
-) -> impl IntoResponse {
+) -> Response<Body> {
     use entities::user;
 
     let AddUserReqBody { name, last_name, email, password } = user_info; 
@@ -40,7 +41,11 @@ pub async fn new_admin(
 
     match new_user.insert(&state.db_conn).await {
         Ok(_user) => {
-            (StatusCode::CREATED, Json(json!({ "message": "User created" }))).into_response()
+            return Response::builder()
+                .status(StatusCode::CREATED)
+                .header(header::AUTHORIZATION, format!("Bearer {}", issue_jwt().unwrap()))
+                .body(Body::default())
+                .unwrap()
         }
         Err(_e) => {
             (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": "Database insertion error" }))).into_response()

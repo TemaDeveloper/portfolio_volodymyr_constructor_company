@@ -1,7 +1,6 @@
-import 'dart:convert';
-import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
+
+import '../main.dart';
  
 class UpdateProjectRequest {
   final String? name;
@@ -33,7 +32,7 @@ class UpdateProjectRequest {
 Future<bool> updateProject(int projectId, UpdateProjectRequest project) async {
   final url = "$baseUrl/api/projects/$projectId";
   try {
-    final response = await Dio().patch(url, data: project.toJson());
+    final response = await dio.patch(url, data: project.toJson());
     if (response.statusCode == 200) {
       return true;
     } else {

@@ -1,11 +1,10 @@
-import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/main.dart';
 
 Future<bool> deleteProject(int projectId) async {
-  final http.Client _client = http.Client();
-  final url = Uri.parse('$baseUrl/api/projects/$projectId');
+  final url = '$baseUrl/api/projects/$projectId';
 
-  final response = await _client.delete(url);
+  final response = await dio.delete(url);
 
   if (response.statusCode == 204) {
     // Successfully deleted

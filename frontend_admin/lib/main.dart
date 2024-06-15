@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 import 'package:nimbus/presentation/routes/router.gr.dart';
@@ -5,13 +6,16 @@ import 'package:nimbus/values/values.dart';
 
 import 'app_theme.dart';
 
+final Dio dio = Dio();
+String? authToken = null;
+
 void main() {
   runApp(PortfolioBuilder());
 }
 
 class PortfolioBuilder extends StatelessWidget {
   final _appRouter = AppRouter();
- 
+
   @override
   Widget build(BuildContext context) {
     return Layout(

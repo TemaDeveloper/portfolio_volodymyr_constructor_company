@@ -1,5 +1,6 @@
-use axum::{middleware, response::IntoResponse, routing};
+use axum::{middleware, response::{Html, IntoResponse}, routing};
 use serde::{Deserialize, Serialize};
+use tower_http::services::ServeDir;
 
 use crate::{common, state::AppState};
 
@@ -25,11 +26,11 @@ pub fn api_router() -> axum::Router<AppState> {
         .layer(middleware::from_fn(verify::is_admin))
 }
 
-async fn page() -> impl IntoResponse {
-    todo!()
-}
+// async fn page() -> Html<String> {
+//     Html::from(include_str!("../../../frontend_admin/build/web/index.html").to_string())
+// }
 
 pub fn page_router() -> axum::Router<AppState> {
     axum::Router::new()
-        .route("/", routing::get(page))
+        .nest_service("/", ServeDir::new("../frontend_admin/build/web"))
 }

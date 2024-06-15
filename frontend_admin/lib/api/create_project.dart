@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:nimbus/api/constants.dart';
 import 'package:nimbus/api/file_picker_helper.dart';
 import 'package:nimbus/api/upload.dart';
+import 'package:nimbus/main.dart';
 
 class GeoData {
   final String country;
@@ -93,7 +94,6 @@ Future<ProjectResponse?> createProject(
   List<CustomPickedFile> pictures,
   List<CustomPickedFile> videos,
 ) async {
-  final Dio dio = Dio();
 
   try {
     ;

@@ -1,10 +1,9 @@
-import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/main.dart';
 
 Future<void> deleteFile(String fileName) async {
-  final url = Uri.parse('$baseUrl/api/projects/storage/delete/$fileName');
-  
-  final response = await http.delete(url);
+  final url = '$baseUrl/api/projects/storage/delete/$fileName';
+  final response = await dio.delete(url);
 
   if (response.statusCode == 200) {
     print('File deleted successfully.');

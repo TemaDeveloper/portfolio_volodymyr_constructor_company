@@ -1,6 +1,5 @@
-import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
-import 'dart:convert';
+import 'package:nimbus/main.dart';
 
 class Project {
   final int year;
@@ -8,6 +7,7 @@ class Project {
   final double latitude;
   final double longitude;
   final List<String> pictures;
+  final List<String> videos;
   final String description;
   final int id;
   final String name;
@@ -18,6 +18,7 @@ class Project {
     required this.latitude,
     required this.longitude,
     required this.pictures,
+    required this.videos,
     required this.description,
     required this.id,
     required this.name,
@@ -30,6 +31,7 @@ class Project {
       latitude: json['latitude'],
       longitude: json['longitude'],
       pictures: List<String>.from(json['pictures']),
+      videos: List<String>.from(json['videos']),
       description: json['description'],
       id: json['id'],
       name: json['name'],
@@ -50,14 +52,18 @@ Future<List<Project>?> getProjects({String? country, int? year}) async {
 
   String queryString = Uri(queryParameters: queryParams).query;
   url = queryString.isNotEmpty ? '$url?$queryString' : url;
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    List<dynamic> body = json.decode(response.body)["projects"];
-    List<Project> projects =
-        body.map((dynamic item) => Project.fromJson(item)).toList();
-    return projects;
-  } else {
+  final response = await dio.get(url);
+  try {
+    if (response.statusCode == 200) {
+      List<Project> projects = (response.data['projects'] as List)
+          .map((item) => Project.fromJson(item))
+          .toList();
+      return projects;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    print("Caught error: $e");
     return null;
   }
 }

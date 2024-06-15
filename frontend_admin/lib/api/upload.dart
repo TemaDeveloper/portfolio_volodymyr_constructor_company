@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:nimbus/api/constants.dart';
+import 'package:nimbus/main.dart';
 
 Future<List<String>> uploadPictures(List<MultipartFile> pictureFiles) async {
-  final Dio dio = Dio();
   const String url = "$baseUrl/api/projects/pictures";
   List<String> fileIds = [];
 
@@ -29,7 +29,6 @@ Future<List<String>> uploadPictures(List<MultipartFile> pictureFiles) async {
 }
 
 Future<List<String>> uploadVideos(List<MultipartFile> videoFiles) async {
-  final Dio dio = Dio();
   const String url = "$baseUrl/api/projects/videos";
   List<String> fileIds = [];
 

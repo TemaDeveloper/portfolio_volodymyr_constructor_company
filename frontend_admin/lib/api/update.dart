@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:nimbus/api/constants.dart';
  
@@ -31,21 +32,17 @@ class UpdateProjectRequest {
 
 Future<bool> updateProject(int projectId, UpdateProjectRequest project) async {
   final url = "$baseUrl/api/projects/$projectId";
-
-  // Create multipart request
-  final request = http.MultipartRequest('PATCH', Uri.parse(url));
-
-  // Add JSON data as a field
-  request.fields['json'] = json.encode(project.toJson());
-
-  // Send the request
-  final response = await request.send();
-
-  // Check the status code
-  if (response.statusCode == 200) {
-    return true;
-  } else {
-    print('Failed to update project: ${response.statusCode}');
+  try {
+    final response = await Dio().patch(url, data: project.toJson());
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Failed to update project: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    print("Cought: $e");
     return false;
   }
+
 }

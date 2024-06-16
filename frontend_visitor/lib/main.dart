@@ -20,6 +20,8 @@ Dio dio = Dio();
 //   return null;
 // }
 
+final Dio dio = Dio();
+
 void main() async {
   // authToken = getCookies("visitor-uuid") ?? "726c65a6-2cb4-479f-a137-2b80a5f0234d";
   // dio.interceptors.add(InterceptorsWrapper(

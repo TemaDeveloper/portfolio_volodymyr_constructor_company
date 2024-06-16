@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+import 'package:dio/dio.dart';
+import 'package:nimbus/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:nimbus/values/values.dart';
@@ -58,16 +61,19 @@ class ProjectItem extends StatefulWidget {
 
 class _ProjectItemState extends State<ProjectItem>
     with TickerProviderStateMixin {
+
   late AnimationController _slideFadeController;
   late AnimationController _indicatorController;
   late Animation<double> _indicatorAnimation;
   late Animation<double> _fadeInAnimation;
   late Animation<Offset> _slideAnimation;
   bool _hovering = false;
+  Uint8List? imageBytes;
 
   @override
   void initState() {
     super.initState();
+    _loadImage();
     _indicatorController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -107,6 +113,23 @@ class _ProjectItemState extends State<ProjectItem>
     super.dispose();
   }
 
+  Future<void> _loadImage() async {
+    try {
+      final response = await dio.get(
+        widget.imageUrl,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          imageBytes = Uint8List.fromList(response.data);
+        });
+      }
+    } catch (e) {
+      // Handle error
+      print('Error fetching image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -115,12 +138,13 @@ class _ProjectItemState extends State<ProjectItem>
       child: Container(
         child: Stack(
           children: [
-            Image.network(
-              widget.imageUrl,
+            imageBytes != null ? 
+            Image.memory(
+              imageBytes!,
               width: 150,
               height: 100,
               fit: BoxFit.fill,
-            ),
+            ) : CircularProgressIndicator(),
             Positioned(
               bottom: 0,
               child: FadeTransition(

@@ -13,7 +13,7 @@ async fn main() -> anyhow::Result<()>{
     let router = create_routes()
         .await?;
 
-    let listener = TcpListener::bind("127.0.0.1:8000")
+    let listener = TcpListener::bind("127.0.0.1:80")
         .await?;
 
     axum::serve(listener, router)

@@ -17,7 +17,7 @@ Future<bool> auth(String email, String pass) async {
   final resp;
   try {
     resp = await dio
-        .post("http://127.0.0.1:8000/admin/auth", data: <String, String>{
+        .post("$baseUrl/auth", data: <String, String>{
       "email": email,
       "password": pass,
     });

@@ -25,7 +25,7 @@ pub async fn create_routes() -> anyhow::Result<Router> {
             .nest_service("/", visitor::static_router()))
 
         .with_state(state)
-        .layer(CorsLayer::permissive())
+        .layer(CorsLayer::very_permissive())
         .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100mb
         .layer(RequestBodyLimitLayer::new(100 * 1024 * 1024))
     )

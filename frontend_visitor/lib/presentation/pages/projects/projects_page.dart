@@ -92,9 +92,6 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
     double contentAreaWidth = screenWidth;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
       body: VisibilityDetector(
         key: Key('project-page'),
         onVisibilityChanged: (visibilityInfo) {
@@ -177,8 +174,9 @@ class _ProjectsPageState extends State<ProjectsPage> with SingleTickerProviderSt
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SpaceH16(),
         Text(
-          widget.description,
+          "${widget.title} - ${widget.description}",
           style: Theme.of(context).textTheme.headlineSmall,
         ),
       ],

@@ -64,7 +64,8 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
           ..id = videoId
           ..setAttribute('controls', 'true')
           ..setAttribute('src', '$baseUrl/api/projects/storage/$video')
-          ..setAttribute('style', 'width: 100%; height: 100%; display: block; background-color: black;');
+          ..setAttribute('style',
+              'width: 100%; height: 100%; display: block; background-color: black;');
         print('Created video element with id: $videoId');
         return videoElement;
       });
@@ -73,13 +74,16 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
 
   void _previousImage() {
     if (_pageController.page!.toInt() > 0) {
-      _pageController.previousPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      _pageController.previousPage(
+          duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
   }
 
   void _nextImage() {
-    if (_pageController.page!.toInt() < project!.pictures.length + project!.videos.length - 1) {
-      _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    if (_pageController.page!.toInt() <
+        project!.pictures.length + project!.videos.length - 1) {
+      _pageController.nextPage(
+          duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
   }
 
@@ -126,7 +130,8 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
   }
 
   Widget _buildMediaSlider() {
-    bool isSingleMedia = (project!.pictures.length + project!.videos.length) == 1;
+    bool isSingleMedia =
+        (project!.pictures.length + project!.videos.length) == 1;
     return Padding(
       padding: EdgeInsets.all(20),
       child: ClipRRect(
@@ -146,12 +151,14 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
                   } else {
                     int videoIndex = index - project!.pictures.length;
                     if (kIsWeb) {
-                      final videoId = 'videoElement_${project!.videos[videoIndex].hashCode}';
+                      final videoId =
+                          'videoElement_${project!.videos[videoIndex].hashCode}';
                       print('Rendering HtmlElementView with id: $videoId');
                       return HtmlElementView(viewType: videoId);
                     } else {
                       // Use another method for non-web platforms, e.g., Chewie
-                      return Text("Video not supported in this implementation for non-web platforms.");
+                      return Text(
+                          "Video not supported in this implementation for non-web platforms.");
                     }
                   }
                 },
@@ -161,7 +168,8 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
                 top: 0,
                 bottom: 0,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_left, color: isSingleMedia ? Colors.grey : Colors.black),
+                  icon: Icon(Icons.arrow_left,
+                      color: isSingleMedia ? Colors.grey : Colors.black),
                   onPressed: isSingleMedia ? null : _previousImage,
                 ),
               ),
@@ -170,7 +178,8 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
                 top: 0,
                 bottom: 0,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_right, color: isSingleMedia ? Colors.grey : Colors.black),
+                  icon: Icon(Icons.arrow_right,
+                      color: isSingleMedia ? Colors.grey : Colors.black),
                   onPressed: isSingleMedia ? null : _nextImage,
                 ),
               ),
@@ -185,7 +194,6 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             project!.name,
@@ -194,21 +202,34 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
           ),
           SizedBox(height: 8),
           Text(
-            project!.description,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18),
-          ),
-          SizedBox(height: 8),
-          Text(
             'Year: ${project!.year}',
-            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
           SizedBox(height: 8),
           Text(
             'Location: ${project!.country}',
-            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
+          ),
+          SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.all(8), // Add padding if needed
+            child: Column(
+              children: [
+                Text(
+                  'Overview',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  project!.description,
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
           ),
         ],
       ),

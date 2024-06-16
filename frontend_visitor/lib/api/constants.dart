@@ -1,1 +1,1 @@
-const baseUrl = "http://127.0.0.1:8000/visitor";
+const baseUrl = "http://3.14.71.164/visitor";

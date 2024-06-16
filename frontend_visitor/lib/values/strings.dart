@@ -25,7 +25,7 @@ class StringConst {
   static const String INTRO = "Hi! I'm Volodymyr Yaremiichuk -";
   static const String POSITION = "Constructor";
   static const String ABOUT_DEV =
-      "Product Designer and Digital Creative Director working in design field for 13 years so far, specialized in UI/UX, Branding and digital designs.";
+      "I specialize in creating new flats from scratch, turning raw spaces into beautifully designed, fully functional homes.";
   static const String ABOUT_ME_1 =
       "Product Designer and Digital Creative Director working in design field for";
   static const String ABOUT_ME_2 =
@@ -44,44 +44,39 @@ class StringConst {
   static const String THERE = "There!";
   static const String ABOUT_ME = "about me";
   static const String ABOUT_ME_DESC =
-      "Product Designer and Digital Creative Director working in design field for 13 years so far, specialized in UI/UX, Branding and digital designs. These are the words we live by in everything we do. Every story we tell, every brand we build, and every interaction we create must not only look beautiful. beautifully, too.";
+      "I am a seasoned professional with over 22 years of experience in building and selling newly constructed flats from scratch. My expertise includes designing custom spaces and specializing in professional bathroom construction and electrical installations. Having completed more than 600 projects, I bring a wealth of knowledge and a proven track record to every job.";
   static const String ABOUT_ME_DESC_1 =
-      "Product Designer and Digital Creative Director working in design ";
+      "I am a seasoned professional with over 22 years of experience in ";
   static const String ABOUT_ME_DESC_2 =
-      "field for 13 years so far, specialized in UI/UX, Branding and digital";
+      "building and selling newly constructed flats from scratch. My expertise ";
   static const String ABOUT_ME_DESC_3 =
-      "designs. These are the words we live by in everything we do. Every";
+      "includes designing custom spaces and specializing in professional bathroom ";
   static const String ABOUT_ME_DESC_4 =
-      "story we tell, every brand we build, and every interaction we";
+      "construction and electrical installations. Having completed more than 600 projects, ";
   static const String ABOUT_ME_DESC_5 =
-      "create must not only look beautiful. beautifully, too.";
-  static const String CREATIVE_DESIGN = "Need Creative Design?";
+      "I bring a wealth of knowledge and a proven track record to every job.";
+  static const String CREATIVE_DESIGN = "Need Builder?";
   static const String HELP = "I can Help You!";
   static const String FOLLOW_ME_1 = "You can also follow me here:";
   static const String INSTA = "Insta";
 
   //Skills Section
   static const String MY_SKILLS = "my skills";
-  static const String SKILLS_TITLE_1 = "What My Design";
+  static const String SKILLS_TITLE_1 = "What My Builder";
   static const String SKILLS_TITLE_2 = "Skills Include";
   static const String SKILLS_DESC =
       "These are the words we live by in everything we do. Every story we tell, every brand we build, and every interaction we create must not only look beautiful.";
-  static const String TOOLS_1_NAME = "Photoshop";
-  static const String TOOLS_1_PROFICIENCY = "80%";
-  static const String TOOLS_2_NAME = "Illustrator";
-  static const String TOOLS_2_PROFICIENCY = "90%";
-  static const String TOOLS_3_NAME = "Sketch";
-  static const String TOOLS_3_PROFICIENCY = "70%";
-  static const String SKILLS_1 = "UI/UX Design";
+ 
+  static const String SKILLS_1 = "Design";
   static const String SKILLS_1_DESC =
       "We believe direct collaboration with our clients is essential to bringing unique";
-  static const String SKILLS_2 = "Graphic Design";
+  static const String SKILLS_2 = "Electricity Providing";
   static const String SKILLS_2_DESC =
       "We believe direct collaboration with our clients is essential to bringing unique";
-  static const String SKILLS_3 = "Motion Design";
+  static const String SKILLS_3 = "Building Flats";
   static const String SKILLS_3_DESC =
       "We believe direct collaboration with our clients is essential to bringing unique";
-  static const String SKILLS_4 = "Photo Retouch";
+  static const String SKILLS_4 = "Floor Constructing";
   static const String SKILLS_4_DESC =
       "We believe direct collaboration with our clients is essential to bringing unique";
 
@@ -99,7 +94,7 @@ class StringConst {
   static const String MEET_MY_PROJECTS = "Meet My Projects";
   static const String MY_WORKS = "my works";
   static const String PROJECTS_DESC =
-      "Product Designer and Digital Creative Director working in design field for 13 years so far, specialized in UI/UX, Branding and digital designs. These are the words we live by in everything we do.";
+      "I am a seasoned professional with over 22 years of experience in building and selling newly constructed flats from scratch. My expertise includes designing custom spaces and specializing in professional bathroom construction and electrical installations.";
   static const String ALL_PROJECTS = "All Projects";
   static const String ALL = "All";
   static const String BRANDING = "2020";

@@ -671,9 +671,6 @@ frontend_visitor/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
 frontend_visitor/ios/Runner.xcworkspace/contents.xcworkspacedata
 frontend_visitor/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
 frontend_visitor/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-frontend_visitor/web/index.html
-frontend_visitor/web/manifest.json
-frontend_visitor/web/icons/logo.png
 frontend_admin/.dart_tool/package_config_subset
 frontend_admin/.dart_tool/package_config.json
 frontend_admin/.dart_tool/version

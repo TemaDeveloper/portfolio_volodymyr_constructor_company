@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui_web';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -15,6 +14,8 @@ import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
 import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:nimbus/api/image_loader.dart'; // Import the media loader
+import 'package:nimbus/presentation/widgets/video_component.dart'; // Import the video component
 
 class CustomPickedFile {
   final String name;
@@ -53,6 +54,8 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
   List<XFile> _mediaFiles = [];
   List<String> _mediaToDelete = [];
   Project? project;
+  Map<int, Uint8List?> _imageBytesMap = {};
+  Map<int, Uint8List?> _videoBytesMap = {};
 
   @override
   void initState() {
@@ -70,9 +73,7 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
       if (projects != null) {
         setState(() {
           project = projects.firstWhere((proj) => proj.id == widget.id);
-          if (kIsWeb) {
-            _registerVideoViewFactories();
-          }
+          _loadAllMedia();
         });
       }
     } catch (error) {
@@ -80,17 +81,20 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
     }
   }
 
-  void _registerVideoViewFactories() {
-    for (var video in project?.videos ?? []) {
-      final videoId = 'videoElement_${video.hashCode}';
-      platformViewRegistry.registerViewFactory(videoId, (int viewId) {
-        final videoElement = html.VideoElement()
-          ..id = videoId
-          ..setAttribute('controls', 'true')
-          ..setAttribute('src', '$baseUrl/api/projects/storage/$video')
-          ..setAttribute('style', 'width: 100%; height: 100%; display: block; background-color: black;');
-        return videoElement;
-      });
+  Future<void> _loadAllMedia() async {
+    if (project != null) {
+      for (int i = 0; i < project!.pictures.length; i++) {
+        Uint8List? imageBytes = await loadMedia('$baseUrl/api/projects/storage/${project!.pictures[i]}');
+        setState(() {
+          _imageBytesMap[i] = imageBytes;
+        });
+      }
+      for (int i = 0; i < project!.videos.length; i++) {
+        Uint8List? videoBytes = await loadMedia('$baseUrl/api/projects/storage/${project!.videos[i]}');
+        setState(() {
+          _videoBytesMap[i] = videoBytes;
+        });
+      }
     }
   }
 
@@ -99,10 +103,20 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
       if (index < project!.pictures.length) {
         _mediaToDelete.add(project!.pictures[index]);
         project!.pictures.removeAt(index);
+        _imageBytesMap.remove(index);
+        // Update the map keys to reflect the changes
+        _imageBytesMap = Map.fromEntries(_imageBytesMap.entries.map((e) {
+          return MapEntry(e.key > index ? e.key - 1 : e.key, e.value);
+        }));
       } else {
         int videoIndex = index - project!.pictures.length;
         _mediaToDelete.add(project!.videos[videoIndex]);
         project!.videos.removeAt(videoIndex);
+        _videoBytesMap.remove(videoIndex);
+        // Update the map keys to reflect the changes
+        _videoBytesMap = Map.fromEntries(_videoBytesMap.entries.map((e) {
+          return MapEntry(e.key > videoIndex ? e.key - 1 : e.key, e.value);
+        }));
       }
     });
   }
@@ -151,10 +165,12 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
                   margin: const EdgeInsets.all(8.0),
                   width: 150,
                   height: 200,
-                  child: Image.network(
-                    '$baseUrl/api/projects/storage/${project!.pictures[index - 1]}',
-                    fit: BoxFit.cover,
-                  ),
+                  child: _imageBytesMap[index - 1] != null
+                      ? Image.memory(
+                          _imageBytesMap[index - 1]!,
+                          fit: BoxFit.cover,
+                        )
+                      : CircularProgressIndicator(),
                 ),
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.red),
@@ -164,41 +180,27 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
             );
           } else {
             int videoIndex = index - 1 - project!.pictures.length;
-            if (kIsWeb) {
-              final videoId = 'videoElement_${project!.videos[videoIndex].hashCode}';
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(8.0),
-                    width: 150,
-                    height: 200,
-                    child: HtmlElementView(viewType: videoId),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _markMediaForDeletion(index - 1),
-                  ),
-                ],
-              );
-            } else {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(8.0),
-                    width: 150,
-                    height: 200,
-                    color: Colors.black12,
-                    child: Center(child: Text("Video not supported")),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _markMediaForDeletion(index - 1),
-                  ),
-                ],
-              );
-            }
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(8.0),
+                  width: 150,
+                  height: 200,
+                  child: _videoBytesMap[videoIndex] != null
+                      ? VideoComponent(
+                          id: 'video_$videoIndex',
+                          bytes: _videoBytesMap[videoIndex]!,
+                          mimeType: 'video/mp4', // Adjust mimeType accordingly
+                        )
+                      : CircularProgressIndicator(),
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _markMediaForDeletion(index - 1),
+                ),
+              ],
+            );
           }
         },
       ),

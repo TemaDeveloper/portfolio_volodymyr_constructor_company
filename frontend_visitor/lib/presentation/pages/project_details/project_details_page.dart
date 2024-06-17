@@ -146,7 +146,6 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
                   if (index < project!.pictures.length) {
                     return Image.network(
                       '$baseUrl/api/projects/storage/${project!.pictures[index]}',
-                      fit: BoxFit.fill,
                     );
                   } else {
                     int videoIndex = index - project!.pictures.length;

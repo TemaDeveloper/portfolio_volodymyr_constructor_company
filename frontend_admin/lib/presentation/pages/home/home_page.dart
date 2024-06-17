@@ -257,15 +257,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       }
     }
 
+    final geoData = _countryController.text  == ""
+      ? null
+      : GeoData(
+        country: _countryController.text,
+        latitude: 0.0, // Replace with actual latitude
+        longitude: 0.0, // Replace with actual longitude
+      );
+      
+
     final project = CreateProjectRequest(
       name: _titleController.text,
       description: _descriptionController.text,
       year: int.tryParse(_yearController.text),
-      geoData: GeoData(
-        country: _countryController.text,
-        latitude: 0.0, // Replace with actual latitude
-        longitude: 0.0, // Replace with actual longitude
-      ),
+      geoData: geoData,
     );
 
     ProjectResponse? response = await createProject(project, pictures, videos);

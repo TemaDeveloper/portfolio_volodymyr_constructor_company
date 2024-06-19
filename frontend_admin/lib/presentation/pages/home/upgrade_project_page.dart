@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -10,6 +11,7 @@ import 'package:nimbus/api/project_model.dart';
 import 'package:nimbus/api/update.dart';
 import 'package:nimbus/api/upload.dart';
 import 'package:nimbus/presentation/layout/adaptive.dart';
+import 'package:nimbus/presentation/routes/router.gr.dart';
 import 'package:nimbus/presentation/widgets/buttons/nimbus_button.dart';
 import 'package:nimbus/presentation/widgets/spaces.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -366,12 +368,11 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project is updated successfully')),
       );
-      print('Project updated successfully');
+      context.router.push(HomeRoute());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project is not updated')),
       );
-      print('Failed to update project');
     }
   }
 
@@ -379,7 +380,7 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
     final projectId = widget.id;
     final success = await deleteProject(projectId);
     if (success) {
-      Navigator.of(context).pop();
+      context.router.push(HomeRoute());
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project is not deleted')),

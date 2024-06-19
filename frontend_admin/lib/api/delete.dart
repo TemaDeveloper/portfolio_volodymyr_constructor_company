@@ -6,7 +6,7 @@ Future<bool> deleteProject(int projectId) async {
 
   final response = await dio.delete(url);
 
-  if (response.statusCode == 204) {
+  if (response.statusCode == 200) {
     // Successfully deleted
     return true;
   } else {

@@ -28696,7 +28696,7 @@ var $async$aue=A.G(function(b,c){if(b===1)return A.C(c,r)
 while(true)switch(s){case 0:s=3
 return A.K($.hi().VF(0,"https://volodymyr.co/admin/api/projects/"+a,t.z),$async$aue)
 case 3:p=c.c
-if(p===204){q=!0
+if(p===200){q=!0
 s=1
 break}else{A.cN("Failed to delete project: "+A.h(p))
 q=!1

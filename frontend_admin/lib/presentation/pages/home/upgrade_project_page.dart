@@ -379,9 +379,7 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
     final projectId = widget.id;
     final success = await deleteProject(projectId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Project is deleted successfully')),
-      );
+      Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Project is not deleted')),

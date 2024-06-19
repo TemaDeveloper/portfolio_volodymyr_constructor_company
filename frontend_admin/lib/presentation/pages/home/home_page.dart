@@ -288,6 +288,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _mediaFiles.clear();
       });
       _fetchProjects();
+      _fetchYears();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to create project')),

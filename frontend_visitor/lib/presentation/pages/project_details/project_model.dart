@@ -7,7 +7,7 @@ class Project {
   final String country;
   final double latitude;
   final double longitude;
-  final List<String> pictures;
+  List<String> pictures;
   final List<String> videos;
   final String description;
   final int id;

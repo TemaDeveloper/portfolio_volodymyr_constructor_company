@@ -726,7 +726,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               subtitle: projects[index].country,
               imageUrl: projects[index].pictures.isNotEmpty
                   ? '$baseUrl/api/projects/storage/${projects[index].pictures[0]}'
-                  : 'assets/images/placeholder.png',
+                  : 'assets/assets/images/placeholder.png',
             ),
           ),
         ),

@@ -3,11 +3,9 @@ import 'dart:ui_web';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:auto_route/auto_route.dart';
 import 'package:universal_html/html.dart' as html;
 import 'project_model.dart';
 import 'package:nimbus/api/constants.dart';
-import 'dart:ui' as ui;
 
 class ProjectDetailsPage extends StatefulWidget {
   final int projectId;
@@ -44,6 +42,9 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
       if (projects != null) {
         setState(() {
           project = projects.firstWhere((proj) => proj.id == widget.projectId);
+          if (project?.pictures.length == 0) {
+            project?.pictures = ["$baseUrl/assets/assets/images/placeholder.png"];
+          }
           if (kIsWeb) {
             _registerVideoViewFactories();
           }

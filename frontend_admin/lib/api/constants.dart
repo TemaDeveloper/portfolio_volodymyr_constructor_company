@@ -1,4 +1,5 @@
-// import 'package:flutter/foundation.dart';
+// const baseBaseUrl = "https://127.0.0.1:8000";
+const baseBaseUrl = "https://127.0.0.1";
+// const baseBaseUrl = "https://volodymyr.co";
 
-const baseBaseUrl = "http://3.19.122.83";
-const baseUrl = "http://3.19.122.83/admin";
+const baseUrl = "$baseBaseUrl/admin";

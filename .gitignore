@@ -925,3 +925,5 @@ frontend_admin/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
 frontend_admin/ios/Runner.xcworkspace/contents.xcworkspacedata
 frontend_admin/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
 frontend_admin/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+LightsailDefaultKey-ca-central-1.pem
+main-key.pem

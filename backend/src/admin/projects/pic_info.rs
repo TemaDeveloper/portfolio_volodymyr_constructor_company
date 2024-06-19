@@ -109,6 +109,7 @@ impl GeoData {
 }
 
 impl PicInfo {
+    #[allow(unused)]
     pub async fn from_bytes(bytes: Bytes) -> Result<Self, PicInfoError> {
         // we use separate funciton as borrow checker is not happy when we create
         // Rexiv2Metadata in an async function

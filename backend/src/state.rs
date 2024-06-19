@@ -2,7 +2,7 @@ use crate::entities::visitor;
 use lazy_static::lazy_static;
 use rand::{distributions::Alphanumeric, Rng};
 use sea_orm::{ColumnTrait, DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryFilter};
-use std::{env, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 
 lazy_static! {
     /// NOTE: regenerated after each server restart
@@ -16,6 +16,8 @@ lazy_static! {
 #[derive(Clone)]
 pub struct AppState {
     pub db_conn: DatabaseConnection,
+    pub admin_dir: Arc<String>,
+    pub visitor_dir: Arc<String>
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -28,10 +30,12 @@ pub enum StateInitError {
 }
 
 impl AppState {
-    pub async fn init() -> Result<Self, StateInitError> {
+    pub async fn init(admin_dir: String, visitor_dir: String) -> Result<Self, StateInitError> {
         let db_conn = sea_orm::Database::connect(env::var("DATABASE_URL")?).await?;
         let s = Self {
             db_conn: db_conn.clone(),
+            admin_dir: Arc::new(admin_dir),
+            visitor_dir: Arc::new(visitor_dir),
         };
 
         tokio::spawn(async move {

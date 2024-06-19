@@ -1,7 +1,6 @@
-use axum::{middleware, response::{Html, IntoResponse}, routing};
+use axum::{middleware, routing};
 use serde::{Deserialize, Serialize};
 use tower_http::services::ServeDir;
-
 use crate::{common, state::AppState};
 
 mod auth;
@@ -26,7 +25,7 @@ pub fn api_router() -> axum::Router<AppState> {
         .layer(middleware::from_fn(verify::is_admin))
 }
 
-pub fn page_router() -> axum::Router<AppState> {
+pub fn page_router(state: AppState) -> axum::Router<AppState> {
     axum::Router::new()
-        .nest_service("/", ServeDir::new("../frontend_admin/build/web"))
+        .nest_service("/", ServeDir::new(state.admin_dir.as_ref()))
 }

@@ -33,6 +33,7 @@ rand = "0.8.5"
 axum-extra = { version = "0.9.3", features = ["cookie", "typed-header"] }
 tower-cookies = "0.10.0"
 axum-server = { version = "0.6.0", features = ["tls-rustls"] }
+symphonia = "0.5.4"
 
 [dependencies.sea-orm-migration]
 version = "0.12.15"

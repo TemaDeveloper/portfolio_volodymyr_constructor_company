@@ -28,18 +28,15 @@ pub struct PicInfo {
 
 fn parse_gps_coordinate(gps_str: &str, direction: &str) -> f64 {
     let parts: Vec<f64> = gps_str
-        .split(',')
+        .split(|c| c == ',' || c == ' ')
         .filter_map(|s| {
-            let fraction: Vec<&str> = s.trim().split('/').collect();
+            let fraction: Vec<&str> = s.split('/').collect();
             if fraction.len() == 2 {
                 if let (Ok(num), Ok(den)) = (fraction[0].parse::<f64>(), fraction[1].parse::<f64>()) {
-                    Some(num / den)
-                } else {
-                    None
+                    return Some(num / den);
                 }
-            } else {
-                None
             }
+            None
         })
         .collect();
 

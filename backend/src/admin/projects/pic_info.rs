@@ -26,16 +26,37 @@ pub struct PicInfo {
     pub geo_data: Option<GeoData>,
 }
 
-fn parse_gps_coordinate(gps_str: &str, direction: String) -> f64 {
+fn parse_gps_coordinate(gps_str: &str, direction: &str) -> f64 {
     let parts: Vec<f64> = gps_str
-        .split_whitespace()
-        .map(|s| {
+        .split(',')
+        .filter_map(|s| {
             let fraction: Vec<&str> = s.split('/').collect();
-            fraction[0].parse::<f64>().unwrap() / fraction[1].parse::<f64>().unwrap()
+            if fraction.len() == 2 {
+                let numerator = fraction[0].parse::<f64>().ok();
+                let denominator = fraction[1].parse::<f64>().ok();
+                if let (Some(num), Some(den)) = (numerator, denominator) {
+                    Some(num / den)
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
         })
         .collect();
 
-    let mut coordinate = parts[0] + (parts[1] / 60.0) + (parts[2] / 3600.0);
+    if parts.is_empty() {
+        panic!("Failed to parse GPS coordinates: {}", gps_str);
+    }
+
+    let mut coordinate = parts[0];
+    if parts.len() > 1 {
+        coordinate += parts[1] / 60.0;
+    }
+    if parts.len() > 2 {
+        coordinate += parts[2] / 3600.0;
+    }
+
     if direction == "S" || direction == "W" {
         coordinate = -coordinate;
     }
@@ -68,7 +89,7 @@ fn get_meta(metadata: Rexiv2Metadata) ->(Option<NaiveDateTime>, Option<f64>, Opt
         .map(|latitude_str| {
             parse_gps_coordinate(
                 &latitude_str,
-                metadata
+                &metadata
                     .get_tag_string("Exif.GPSInfo.GPSLatitudeRef")
                     .unwrap_or("N".into()),
             )
@@ -80,7 +101,7 @@ fn get_meta(metadata: Rexiv2Metadata) ->(Option<NaiveDateTime>, Option<f64>, Opt
         .map(|longitude_str| {
             parse_gps_coordinate(
                 &longitude_str,
-                metadata
+                &metadata
                     .get_tag_string("Exif.GPSInfo.GPSLongitudeRef")
                     .unwrap_or("E".into()),
             )

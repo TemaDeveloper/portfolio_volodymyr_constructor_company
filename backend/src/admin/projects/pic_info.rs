@@ -47,7 +47,7 @@ async fn fetch_country_name(latitude: f64, longitude: f64) -> Result<String, req
     let url = format!("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={}&longitude={}&localityLanguage=en", latitude, longitude);
     let response: serde_json::Value = client.get(&url).send().await?.json().await?;
 
-    tracing::info!("Api Cord Response: {response}");
+    tracing::info!("Request(latitude: {latitude}, longitude: {longitude})|Api Cord Response: {response}");
 
     Ok(response["countryName"]
         .as_str()

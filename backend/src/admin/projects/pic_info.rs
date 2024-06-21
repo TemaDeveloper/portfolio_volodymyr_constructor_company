@@ -27,38 +27,6 @@ pub struct PicInfo {
     pub geo_data: Option<GeoData>,
 }
 
-fn parse_gps_coordinate(gps_str: &str, direction: &str) -> f64 {
-    let parts: Vec<f64> = gps_str
-        .split(|c| c == ',' || c == ' ')
-        .filter_map(|s| {
-            let fraction: Vec<&str> = s.split('/').collect();
-            if fraction.len() == 2 {
-                if let (Ok(num), Ok(den)) = (fraction[0].parse::<f64>(), fraction[1].parse::<f64>()) {
-                    return Some(num / den);
-                }
-            }
-            None
-        })
-        .collect();
-
-    if parts.is_empty() {
-        panic!("Failed to parse GPS coordinates: {}", gps_str);
-    }
-
-    let mut coordinate = parts[0];
-    if parts.len() > 1 {
-        coordinate += parts[1] / 60.0;
-    }
-    if parts.len() > 2 {
-        coordinate += parts[2] / 3600.0;
-    }
-
-    if direction == "S" || direction == "W" {
-        coordinate = -coordinate;
-    }
-    coordinate
-}
-
 async fn fetch_country_name(latitude: f64, longitude: f64) -> Result<String, reqwest::Error> {
     let client = Client::new();
     let url = format!("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={}&longitude={}&localityLanguage=en", latitude, longitude);
@@ -72,46 +40,32 @@ async fn fetch_country_name(latitude: f64, longitude: f64) -> Result<String, req
         .to_string())
 }
 
-fn get_meta(metadata: Rexiv2Metadata) ->(Option<NaiveDateTime>, Option<f64>, Option<f64>) {
+fn get_meta(metadata: Rexiv2Metadata) ->(Option<NaiveDateTime>, Option<rexiv2::GpsInfo>) {
 
     let date_time = metadata
         .get_tag_string("Exif.Photo.DateTimeOriginal")
         .ok()
         .and_then(|dt| NaiveDateTime::parse_from_str(&dt, "%Y:%m:%d %H:%M:%S").ok());
 
-    let latitude = metadata
-        .get_tag_rational("Exif.GPSInfo.GPSLatitude")
-        .map(|latitude| {
-            latitude.to_f64().unwrap()
-        });
+    let gps_info = metadata
+        .get_gps_info();
 
-    let longitude = metadata
-        .get_tag_rational("Exif.GPSInfo.GPSLongitude")
-        .map(|longitude| {
-            longitude.to_f64().unwrap()
-        });
-
-    (date_time, latitude, longitude)
+    (date_time, gps_info)
 }
 
 impl GeoData {
-    async fn from_latlong(
-        latitude: Option<f64>,
-        longitude: Option<f64>,
-    ) -> Result<Option<Self>, PicInfoError> {
-        if latitude.is_some() && longitude.is_some() {
-            let country = fetch_country_name(latitude.unwrap(), longitude.unwrap())
-                .await
-                .map_err(|e| PicInfoError::CountryFetchError(e.to_string()))?;
-            let country = country.trim().to_owned();
-            Ok(Some(Self {
-                country,
-                latitude: latitude.unwrap(),
-                longitude: longitude.unwrap(),
-            }))
-        } else {
-            Ok(None)
-        }
+    async fn from_gps_info(
+        gps_info: rexiv2::GpsInfo
+    ) -> Result<Self, PicInfoError> {
+        let country = fetch_country_name(gps_info.latitude, gps_info.longitude)
+            .await
+            .map_err(|e| PicInfoError::CountryFetchError(e.to_string()))?;
+        let country = country.trim().to_owned();
+        Ok(Self {
+            country,
+            latitude: gps_info.latitude,
+            longitude: gps_info.longitude,
+        })
     }
 }
 
@@ -120,8 +74,12 @@ impl PicInfo {
     pub async fn from_bytes(bytes: Bytes) -> Result<Self, PicInfoError> {
         // we use separate funciton as borrow checker is not happy when we create
         // Rexiv2Metadata in an async function
-        let (date_time, latitude, longitude) = get_meta(Rexiv2Metadata::new_from_buffer(&bytes)?);
-        let geo_data = GeoData::from_latlong(latitude, longitude).await?;
+        let (date_time, gps_info) = get_meta(Rexiv2Metadata::new_from_buffer(&bytes)?);
+        let geo_data = if let Some(gps_info) = gps_info {
+            Some(GeoData::from_gps_info(gps_info).await?)
+        } else {
+            None
+        };
 
         Ok(Self {
             date_time,
@@ -130,28 +88,17 @@ impl PicInfo {
     }
 
     pub async fn from_file(file_name: &str) -> Result<Self, PicInfoError> {
-        let (date_time, latitude, longitude) = get_meta(Rexiv2Metadata::new_from_path(file_name)?);
-        let geo_data = GeoData::from_latlong(latitude, longitude).await?;
+        let (date_time, gps_info) = get_meta(Rexiv2Metadata::new_from_path(file_name)?);
+        let geo_data = if let Some(gps_info) = gps_info {
+            Some(GeoData::from_gps_info(gps_info).await?)
+        } else {
+            None
+        };
 
         Ok(Self {
             date_time,
             geo_data,
         })
     }
-
-    // pub fn google_map_link(&self) -> Option<String> {
-    //     format!(
-    //         "https://www.google.com/maps?q={},{}",
-    //         self.latitude, self.longitude
-    //     )
-    // }
-    //
-    // pub fn country(&self) -> &str {
-    //     &self.country
-    // }
-    //
-    // pub fn cords(&self) -> (f64, f64) {
-    //     (self.latitude, self.longitude)
-    // }
 }
 

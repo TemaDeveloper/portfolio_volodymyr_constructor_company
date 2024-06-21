@@ -29,25 +29,17 @@ pub struct PicInfo {
 fn parse_gps_coordinate(gps_str: &str, direction: &str) -> f64 {
     let parts: Vec<f64> = gps_str
         .split(',')
-        .filter_map(|s| {
-            let fraction: Vec<&str> = s.split('/').collect();
+        .flat_map(|s| {
+            let fraction: Vec<&str> = s.trim().split('/').collect();
             if fraction.len() == 2 {
-                let numerator = fraction[0].parse::<f64>().ok();
-                let denominator = fraction[1].parse::<f64>().ok();
-                if let (Some(num), Some(den)) = (numerator, denominator) {
-                    Some(num / den)
-                } else {
-                    None
-                }
+                let numerator = fraction[0].parse::<f64>().unwrap();
+                let denominator = fraction[1].parse::<f64>().unwrap();
+                Some(numerator / denominator)
             } else {
                 None
             }
         })
         .collect();
-
-    if parts.is_empty() {
-        panic!("Failed to parse GPS coordinates: {}", gps_str);
-    }
 
     let mut coordinate = parts[0];
     if parts.len() > 1 {

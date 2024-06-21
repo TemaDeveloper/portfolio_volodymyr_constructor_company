@@ -4,6 +4,7 @@ use reqwest::Client;
 use rexiv2::Metadata as Rexiv2Metadata;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use num_traits::cast::ToPrimitive;
 
 #[derive(Error, Debug)]
 pub enum PicInfoError {
@@ -79,27 +80,15 @@ fn get_meta(metadata: Rexiv2Metadata) ->(Option<NaiveDateTime>, Option<f64>, Opt
         .and_then(|dt| NaiveDateTime::parse_from_str(&dt, "%Y:%m:%d %H:%M:%S").ok());
 
     let latitude = metadata
-        .get_tag_string("Exif.GPSInfo.GPSLatitude")
-        .ok()
-        .map(|latitude_str| {
-            parse_gps_coordinate(
-                &latitude_str,
-                &metadata
-                    .get_tag_string("Exif.GPSInfo.GPSLatitudeRef")
-                    .unwrap_or("N".into()),
-            )
+        .get_tag_rational("Exif.GPSInfo.GPSLatitude")
+        .map(|latitude| {
+            latitude.to_f64().unwrap()
         });
 
     let longitude = metadata
-        .get_tag_string("Exif.GPSInfo.GPSLongitude")
-        .ok()
-        .map(|longitude_str| {
-            parse_gps_coordinate(
-                &longitude_str,
-                &metadata
-                    .get_tag_string("Exif.GPSInfo.GPSLongitudeRef")
-                    .unwrap_or("E".into()),
-            )
+        .get_tag_rational("Exif.GPSInfo.GPSLongitude")
+        .map(|longitude| {
+            longitude.to_f64().unwrap()
         });
 
     (date_time, latitude, longitude)

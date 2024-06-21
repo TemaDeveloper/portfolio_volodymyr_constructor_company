@@ -480,6 +480,7 @@ dependencies = [
  "jsonwebtoken",
  "lazy_static",
  "nestify",
+ "num-traits",
  "rand",
  "reqwest",
  "rexiv2",

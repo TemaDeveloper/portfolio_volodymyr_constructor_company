@@ -344,7 +344,7 @@ class ProjectCategory extends StatefulWidget {
   ProjectCategory({
     required this.title,
     required this.number,
-    this.titleColor = AppColors.black,
+    this.titleColor = const Color.fromARGB(255, 255, 255, 255),
     this.numberColor = Colors.transparent,
     this.hoverColor = AppColors.primaryColor,
     this.titleStyle,
@@ -391,34 +391,40 @@ class _ProjectCategoryState extends State<ProjectCategory> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    return MouseRegion(
-      onEnter: (e) => _mouseEnter(true),
-      onExit: (e) => _mouseEnter(false),
-      child: InkWell(
-        onTap: widget.onTap,
-        hoverColor: Colors.transparent,
-        child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: widget.title,
-                style: widget.titleStyle?.copyWith(
-                  color: colorOfCategory(),
-                ) ??
-                    textTheme.titleMedium?.copyWith(
-                      fontSize: Sizes.TEXT_SIZE_16,
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(color: const Color.fromARGB(255, 42, 42, 42)),
+        child: MouseRegion(
+          onEnter: (e) => _mouseEnter(true),
+          onExit: (e) => _mouseEnter(false),
+          child: InkWell(
+            onTap: widget.onTap,
+            hoverColor: Colors.transparent,
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: widget.title,
+                    style: widget.titleStyle?.copyWith(
                       color: colorOfCategory(),
+                    ) ??
+                        textTheme.titleMedium?.copyWith(
+                          fontSize: Sizes.TEXT_SIZE_16,
+                          color: colorOfCategory(),
+                        ),
+                  ),
+                  WidgetSpan(
+                    child: widget.isSelected
+                        ? numberOfProjectItems()
+                        : FadeTransition(
+                      opacity: _controller.view,
+                      child: numberOfProjectItems(),
                     ),
+                  )
+                ],
               ),
-              WidgetSpan(
-                child: widget.isSelected
-                    ? numberOfProjectItems()
-                    : FadeTransition(
-                  opacity: _controller.view,
-                  child: numberOfProjectItems(),
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),

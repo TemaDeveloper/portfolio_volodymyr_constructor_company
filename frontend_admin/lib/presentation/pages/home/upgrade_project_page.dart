@@ -86,13 +86,15 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
   Future<void> _loadAllMedia() async {
     if (project != null) {
       for (int i = 0; i < project!.pictures.length; i++) {
-        Uint8List? imageBytes = await loadMedia('$baseUrl/api/projects/storage/${project!.pictures[i]}');
+        Uint8List? imageBytes = await loadMedia(
+            '$baseUrl/api/projects/storage/${project!.pictures[i]}');
         setState(() {
           _imageBytesMap[i] = imageBytes;
         });
       }
       for (int i = 0; i < project!.videos.length; i++) {
-        Uint8List? videoBytes = await loadMedia('$baseUrl/api/projects/storage/${project!.videos[i]}');
+        Uint8List? videoBytes = await loadMedia(
+            '$baseUrl/api/projects/storage/${project!.videos[i]}');
         setState(() {
           _videoBytesMap[i] = videoBytes;
         });
@@ -210,7 +212,8 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
   }
 
   Future<MultipartFile> convertXFileToMultipartFile(XFile file) async {
-    return MultipartFile.fromBytes(await file.readAsBytes(), filename: file.name);
+    return MultipartFile.fromBytes(await file.readAsBytes(),
+        filename: file.name);
   }
 
   bool isMobile(BuildContext context) {
@@ -243,7 +246,8 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
             onTap: () async {
               Navigator.pop(context);
               final ImagePicker _picker = ImagePicker();
-              final XFile? pickedVideo = await _picker.pickVideo(source: ImageSource.gallery);
+              final XFile? pickedVideo =
+                  await _picker.pickVideo(source: ImageSource.gallery);
               if (pickedVideo != null) {
                 setState(() {
                   _mediaFiles.add(pickedVideo);
@@ -278,7 +282,19 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
                 SpaceH20(),
                 _buildTextField(_titleController, 'Title'),
                 SpaceH20(),
-                _buildTextField(_descriptionController, 'Description'),
+                Flexible(
+                  child: TextField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      labelText: 'Project Description',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    maxLines: null, // Allows the TextField to expand vertically
+                    minLines: 1, // Sets the initial height
+                  ),
+                ),
                 SpaceH20(),
                 _buildTextField(_locationController, 'Location'),
                 SpaceH20(),
@@ -354,9 +370,14 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
     // Step 3: Prepare the update request with new info and media lists
     final updateRequest = UpdateProjectRequest(
       name: _titleController.text.isNotEmpty ? _titleController.text : null,
-      description: _descriptionController.text.isNotEmpty ? _descriptionController.text : null,
-      year: _yearController.text.isNotEmpty ? int.tryParse(_yearController.text) : null,
-      country: _locationController.text.isNotEmpty ? _locationController.text : null,
+      description: _descriptionController.text.isNotEmpty
+          ? _descriptionController.text
+          : null,
+      year: _yearController.text.isNotEmpty
+          ? int.tryParse(_yearController.text)
+          : null,
+      country:
+          _locationController.text.isNotEmpty ? _locationController.text : null,
       pictures: updatedPictures,
       videos: updatedVideos,
     );

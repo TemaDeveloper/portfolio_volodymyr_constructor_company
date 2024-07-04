@@ -257,14 +257,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       }
     }
 
-    final geoData = _countryController.text  == ""
-      ? null
-      : GeoData(
-        country: _countryController.text,
-        latitude: 0.0, // Replace with actual latitude
-        longitude: 0.0, // Replace with actual longitude
-      );
-      
+    final geoData = _countryController.text == ""
+        ? null
+        : GeoData(
+            country: _countryController.text,
+            latitude: 0.0, // Replace with actual latitude
+            longitude: 0.0, // Replace with actual longitude
+          );
 
     final project = CreateProjectRequest(
       name: _titleController.text,
@@ -489,13 +488,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ),
             SpaceH20(),
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: 'Project Description',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+            Flexible(
+              child: TextField(
+                controller: _descriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Project Description',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
+                maxLines: null, // Allows the TextField to expand vertically
+                minLines: 1, // Sets the initial height
               ),
             ),
             SpaceH20(),

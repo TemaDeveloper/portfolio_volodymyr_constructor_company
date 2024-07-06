@@ -2,6 +2,7 @@ import 'dart:ui_web';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:nimbus/presentation/pages/project_details/full_screen.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:universal_html/html.dart' as html;
 import 'project_model.dart';
@@ -131,64 +132,75 @@ class _ProjectDetailsPageState extends State<ProjectDetailsPage> {
   }
 
   Widget _buildMediaSlider() {
-    bool isSingleMedia =
-        (project!.pictures.length + project!.videos.length) == 1;
-    return Padding(
-      padding: EdgeInsets.all(20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          child: Stack(
-            children: [
-              PageView.builder(
-                controller: _pageController,
-                itemCount: project!.pictures.length + project!.videos.length,
-                itemBuilder: (context, index) {
-                  if (index < project!.pictures.length) {
-                    return Image.network(
-                      '$baseUrl/api/projects/storage/${project!.pictures[index]}',
-                    );
-                  } else {
-                    int videoIndex = index - project!.pictures.length;
-                    if (kIsWeb) {
-                      final videoId =
-                          'videoElement_${project!.videos[videoIndex].hashCode}';
-                      print('Rendering HtmlElementView with id: $videoId');
-                      return HtmlElementView(viewType: videoId);
-                    } else {
-                      // Use another method for non-web platforms, e.g., Chewie
-                      return Text(
-                          "Video not supported in this implementation for non-web platforms.");
-                    }
-                  }
-                },
+  bool isSingleMedia = (project!.pictures.length + project!.videos.length) == 1;
+  return Padding(
+    padding: EdgeInsets.all(20),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _pageController,
+              itemCount: project!.pictures.length + project!.videos.length,
+              itemBuilder: (context, index) {
+                if (index < project!.pictures.length) {
+                  String imageUrl = '$baseUrl/api/projects/storage/${project!.pictures[index]}';
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullScreenMedia(mediaUrl: imageUrl),
+                        ),
+                      );
+                    },
+                    child: Image.network(imageUrl),
+                  );
+                } else {
+                  int videoIndex = index - project!.pictures.length;
+                  String videoUrl = project!.videos[videoIndex];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullScreenMedia(mediaUrl: videoUrl, isVideo: true),
+                        ),
+                      );
+                    },
+                    child: kIsWeb
+                        ? HtmlElementView(viewType: videoUrl)
+                        : Text("Video not supported in this implementation for non-web platforms."),
+                  );
+                }
+              },
+            ),
+            Positioned(
+              left: 8.0,
+              top: 0,
+              bottom: 0,
+              child: IconButton(
+                icon: Icon(Icons.arrow_left, color: isSingleMedia ? Colors.grey : Colors.black),
+                onPressed: isSingleMedia ? null : _previousImage,
               ),
-              Positioned(
-                left: 8.0,
-                top: 0,
-                bottom: 0,
-                child: IconButton(
-                  icon: Icon(Icons.arrow_left,
-                      color: isSingleMedia ? Colors.grey : Colors.black),
-                  onPressed: isSingleMedia ? null : _previousImage,
-                ),
+            ),
+            Positioned(
+              right: 8.0,
+              top: 0,
+              bottom: 0,
+              child: IconButton(
+                icon: Icon(Icons.arrow_right, color: isSingleMedia ? Colors.grey : Colors.black),
+                onPressed: isSingleMedia ? null : _nextImage,
               ),
-              Positioned(
-                right: 8.0,
-                top: 0,
-                bottom: 0,
-                child: IconButton(
-                  icon: Icon(Icons.arrow_right,
-                      color: isSingleMedia ? Colors.grey : Colors.black),
-                  onPressed: isSingleMedia ? null : _nextImage,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildProjectDetails() {
     return Padding(

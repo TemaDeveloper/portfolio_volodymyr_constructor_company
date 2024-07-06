@@ -282,17 +282,26 @@ class _UpgradeProjectPageState extends State<UpgradeProjectPage> {
                 SpaceH20(),
                 _buildTextField(_titleController, 'Title'),
                 SpaceH20(),
-                Flexible(
-                  child: TextField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(
-                      labelText: 'Project Description',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 200.0, // Set a maximum height
+                  ),
+                  child: Scrollbar(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      reverse: true,
+                      child: TextField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                          labelText: 'Project Description',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        maxLines: null,
+                        minLines: 1,
                       ),
                     ),
-                    maxLines: null, // Allows the TextField to expand vertically
-                    minLines: 1, // Sets the initial height
                   ),
                 ),
                 SpaceH20(),
